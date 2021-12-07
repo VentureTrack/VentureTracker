@@ -1,5 +1,6 @@
 # source env/Scripts/activate
 # Password: DX%4r7ktSYZa8z$
+# python manage.py migrate --run-syncdb
 
 asgiref==3.4.1
 Django==3.2.9

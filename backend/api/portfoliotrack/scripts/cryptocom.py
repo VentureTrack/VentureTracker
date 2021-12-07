@@ -1,20 +1,21 @@
 # Import Libiraries
-import requests
 from bs4 import BeautifulSoup
-import re
 
-def main():
+from .helper import getHTML, insertDB
+
+from ..models import Company
+
+def cryptocom():
     url = "https://crypto.com/capital"
-    
-    response = requests.get(url).text
+    xpath = "/html/body/div[1]/div[1]/main/div[4]/div[2]"
 
-    soup = BeautifulSoup(response, 'html.parser')
-
-    # find div with class "css-1fp6g4d"
-    div = soup.find("div", class_="css-1fp6g4d")
+    html = getHTML(url, xpath)
 
     # find all the a tags
-    aTags = div.find_all("a")
+    aTags = html.find_all("a")
+
+    # get foreign key
+    fk = Company.objects.get(name="Crypto.com")
 
     # loop through a aTags
     for aTag in aTags:
@@ -22,14 +23,15 @@ def main():
         url = aTag.get("href")
         
         # get the image
-        text = aTag.find("img").get("src")
+        #  turn this code into ternary operator
+        image = aTag.find("img").get("src")
 
+        if not(image.startswith("data:image/")):
+            image = "https://crypto.com" + image 
+        
         # get domain name within url
-        domain = url.split("www.")[-1].split("//")[-1].split(".")[0]
+        name = url.split("www.")[-1].split("//")[-1].split(".")[0]
+        
+        insertDB(fk, name, url, image)
 
-        # print the text and href
-        print(url, domain)
-
-
-
-main()
+# cryptocom()

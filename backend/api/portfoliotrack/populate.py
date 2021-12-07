@@ -1,9 +1,36 @@
 # Populate database
-from .scripts.binancelabs import main as binance
-from .scripts.coinbaseventures import main as coinbase
+from .scripts.kucoin import kucoin
+from .scripts.gemini import gemini
+from .scripts.coinbaseventures import coinbase
+from .scripts.binancelabs import binance
+from .scripts.cryptocom import cryptocom
+from .scripts.blockchaincom import blockchaincom
+from .scripts.gateio import gateio
+from .scripts.cointiger import cointiger
+from .scripts.okex import okex
+from .scripts.huobi import huobi, huobidefilabs
 
-def main():
-    # TODO: Make it update instead of just create
-    # binance()
+from .models import Company
+
+def populateAssets():
+    # kucoin()
+    # gemini()
     # coinbase()
+    # binance()
+    # blockchaincom()
+    # cryptocom()
+    # gateio()
+    # cointiger()
+    # okex()
+    # huobi()
+    # huobidefilabs()
+    
+    pass
+
+def populateCompany():
+    # companies = ["Okex", "Huobi", "Cointiger", "Crypto.com", "Kucoin", "Coinbase", "Binance", "Gate.io", "Gemini", "Blockchain.com"]
+    
+    # for company in companies:
+    #     Company.objects.update_or_create(name=company, companyType="Exchange")
+    
     pass

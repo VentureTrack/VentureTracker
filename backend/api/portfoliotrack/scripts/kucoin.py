@@ -1,33 +1,109 @@
 # Import Libiraries
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from bs4 import BeautifulSoup
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
 import requests
 import json
 import demjson
+import time
 
-def main():
-    url = "https://assets.staticimg.com/landing-web/1.12.0/p__investment-incubation-program__index.async.js"
-    response = requests.get(url).text
+from ..models import Asset, Company
+
+def kucoin():
+    options = Options()
+    options.headless = True
+    options.add_argument("--start-maximized")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
-    # find index of "Qe = [{"
-    start_index = response.find("Qe=[{")
+    # DRIVER_PATH = './chromedriver/chromedriver.exe'
+    DRIVER_PATH = './portfoliotrack/scripts/chromedriver/chromedriver.exe'
 
-    # find index of "}];" after start_index
-    end_index = response.find(',$e=n("nO/9")')
+    driver = webdriver.Chrome(options=options, executable_path=DRIVER_PATH)
 
-    # slice the response
-    response = response[start_index:end_index]
+    url = f"https://www.kucoin.com/land/investment-incubation-program"
 
-    # parse the response
-    response = response.replace("Qe=", "")
 
-    response = demjson.decode(response)
-    print(response)
-
-    # laod json
-    response = json.loads(response)
+    # get source code of website after javascript loads
+    driver.get(url)
     
+    # find class "portfolio___2iqqU"
+    element = driver.find_element_by_class_name("portfolio___2iqqU")
+    classes = element.get_attribute("innerHTML")
+    soup = BeautifulSoup(classes, 'html.parser')
 
-    print(response)
+    links = []
+    images = []
+
+    # hover cursor at all instances of class "item___1f8--"
+    items = driver.find_elements_by_class_name("item___1f8--")
+    for item in items:
+        driver.switch_to.window(driver.window_handles[0])
+        
+        # get inner attribute
+        classes = item.get_attribute("innerHTML")
+        soup = BeautifulSoup(classes, 'html.parser')
+        # get image
+        image = soup.find("img")['src'] 
+        images.append(image)
+
+        # hover over item
+        actions = ActionChains(driver)
+        
+        actions.move_to_element(item)
+        actions.click()
+    
+        actions.perform()
+        
+        driver.switch_to.window(driver.window_handles[-1])
+        links.append(driver.current_url)
+        driver.close()
+
+    driver.switch_to.window(driver.window_handles[0])
+
+    # execute script 
+    html = driver.execute_script("return document.body.innerHTML")
+    
+    driver.close()
+    
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # get foreign key
+    fk = Company.objects.get(name="Kucoin")
+    data = []
+
+    # parse html
+
+    # find all classes ant-popover
+    popovers = soup.find_all("div", class_="ant-popover")
+
+    for index, popover in enumerate(popovers):
+        # get title by class "ant-popover-title"
+        name = popover.find("div", class_="ant-popover-title").text
+        url = links[index]
+        image = images[index]
+
+        # get details by class "ant-popover-inner-content"
+        details = popover.find("div", class_="ant-popover-inner-content")
 
 
+        from django.core import files
+        from django.core.files.base import ContentFile
 
-main()
+
+        r = requests.get(image)
+        filename = image.split("/")[-1]
+        fileEXT = "." + filename.split('.')[-1]
+
+
+        Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(r.content), name + fileEXT)})
+
+
+        # print(title.text, details.text, links[index], images[index])

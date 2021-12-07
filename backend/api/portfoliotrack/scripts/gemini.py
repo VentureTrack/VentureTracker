@@ -1,35 +1,94 @@
 # Import Libraries
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
 from bs4 import BeautifulSoup
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
 import requests
+import json
+import time
 
-def main():
+from ..models import Asset, Company
 
-    url = "https://www.gemini.com/frontier-fund"
 
-    response = requests.get(url)
+def gemini():
+    options = Options()
+    # options.headless = True
+    options.add_argument("--start-maximized")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    
+    DRIVER_PATH = './portfoliotrack/scripts/chromedriver/chromedriver.exe'
+    
+    driver = webdriver.Chrome(options=options, executable_path=DRIVER_PATH)
 
-    soup = BeautifulSoup(response.text, 'html.parser')
+    url = f"https://www.gemini.com/frontier-fund"
 
-    # div with class "Grid__Row-jfuv4v-2 style__ImageRow-sc-1p7qpse-2 kNOyUo hUrjNd"
-    div = soup.find("div", class_="Grid__Row-jfuv4v-2 style__ImageRow-sc-1p7qpse-2 kNOyUo hUrjNd")
 
-    # get all div tags under div
-    divTags = div.find_all("div")
+    # get source code of website after javascript loads
+    driver.get(url)
 
-    for divTag in divTags:
-        # get div with class "style__InnerContainer-sc-1p7qpse-3 iiRSIO"
-        div = divTag.find("div", class_="style__InnerContainer-sc-1p7qpse-3 iiRSIO").find("div", class_="style__ImageContainer-sc-1p7qpse-1 jJSHNQ")
+    # handle cookies popup
+    driver.find_element_by_xpath('//*[@id="cookiePolicyAgreement"]/div/button').click()
+    
+    # find selector "#global-layout > main > section.Layout__ContentContainer-sc-1bkov5f-1.style__SectionContentContainer-sc-1p7qpse-0.fNGQvD.NqelJ > div > div.Grid__Row-jfuv4v-2.style__ImageRow-sc-1p7qpse-2.kNOyUo.hUrjNd"
+    cssSelector = "#global-layout > main > section.Layout__ContentContainer-sc-1bkov5f-1.style__SectionContentContainer-sc-1p7qpse-0.fNGQvD.NqelJ > div > div.Grid__Row-jfuv4v-2.style__ImageRow-sc-1p7qpse-2.kNOyUo.hUrjNd"
+    element = driver.find_element_by_css_selector(cssSelector)
+
+    classes = element.get_attribute("innerHTML")
+    soup = BeautifulSoup(classes, 'html.parser')
+
+    # hover cursor at all instances of class "Grid__Col-jfuv4v-3 gJopZv"
+    items = driver.find_elements_by_class_name("gJopZv")
+    
+
+    # get foreign key
+    fk = Company.objects.get(name="Gemini")
+    
+    for item in items:
+        # hover over item
+        actions = ActionChains(driver)
         
-        # get href
-        url = div.find("a").get("href")
+        actions.move_to_element(item)
+    
+        actions.perform()
+
+        # print div item
+        html = item.get_attribute("innerHTML")
+        
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # get href attribute
+        url = soup.find("a")['href']
 
         # get domain name within url
-        name = url.split("www.")[-1].split("//")[-1].split(".")[0]
+        name = soup.find("img")['alt']
 
-        print(name, url)
-        break
+        # get image url
+        image = "https:" + soup.find("img")['src']
 
-    # print(response.text)
+        # get description p tag
+        desc = soup.find("p").get_text()
 
 
-main()
+        from django.core import files
+        from django.core.files.base import ContentFile
+
+        r = requests.get(image)
+        image = image.split('?')[0]
+        filename = image.split("/")[-1]
+        ext = "." + filename.split(".")[-1]
+
+        Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(r.content), name + ext)})
+
+
+        # print(link, name, desc, img)
+
+
+
+    driver.close()

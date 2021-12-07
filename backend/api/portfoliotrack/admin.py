@@ -1,29 +1,27 @@
 from django.contrib import admin
 
-from .models import Company, Assets
+from .models import Company, Asset
+
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 class CompanyAdmin(admin.ModelAdmin):
     list_display = ["name"]
     search_fields = ["name"]
 
 class AssetsAdmin(admin.ModelAdmin):
-    list_display = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
+    # list_display = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
+    list_display = ('company', 'name', 'url', 'catagorey', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
 
     search_fields = ['name']
-    readonly_fields = ['url']
+    # readonly_fields = ['url']
+    
+    def url(self, obj):
+        return format_html("<a href='{url}'>{url}</a>", url=obj.firm_url)
 
-    # make url open in new tab
-    def url(self, instance):
-        print(instance.url + "--------------------------------------")
-        return format_html(
-            '<a href="{0}" target="_blank">{1}</a>',
-            instance.url,
-            instance.url,
-        )
-
-    url.short_description = "Click Me"
+    def image(self, obj):
+        return format_html("<img src='{image}'>{image}</img>", url=obj.firm_url)
 
 
 admin.site.register(Company, CompanyAdmin)
-admin.site.register(Assets, AssetsAdmin)
+admin.site.register(Asset, AssetsAdmin)

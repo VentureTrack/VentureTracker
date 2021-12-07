@@ -1,6 +1,5 @@
 from django.db import models
 
-
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save
 
@@ -12,27 +11,28 @@ import json
 # Create your models here.
 class Company(models.Model):
     name = models.CharField(max_length=60, unique=True)
+    affiliateLink = models.CharField(max_length=200, blank=True, null=True)
+    twitter = models.CharField(max_length=200, blank=True, null=True)
+    logo = models.ImageField(upload_to='media', blank=True, null=True)
+    companyType = models.CharField(max_length=200, blank=True, null=True)
+
     
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ['name', 'affiliateLink', 'twitter', 'logo', 'companyType']
 
-class Assets(models.Model):
+
+class Asset(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     name = models.CharField(max_length=60)
-    url = models.URLField(max_length=200, unique=True)
+    url = models.URLField(max_length=200, blank=True, null=True)
     image = models.ImageField(upload_to='images/')
+    catagorey = models.CharField(max_length=60, blank=True, null=True)
 
     # Smart Contract Detail
     smartContractAddress = models.CharField(max_length=500, blank=True, null=True, unique=True)
-    # assetPlatformChoices = ((),
-    #                         (),
-    #                         (),
-    #                         (),
-    #                         (),
-    #                         (),
-    #                         (),
-    #                         (),)
     
     asset_platform = models.CharField(max_length=60, blank=True, null=True)
     
@@ -42,9 +42,13 @@ class Assets(models.Model):
 
     def __str__(self):
         return self.name
+    
+    # I beleive this is deprecated
+    class Meta:
+        unique_together = (('company', 'name', 'url', 'image', 'catagorey', 'smartContractAddress', 'asset_platform', 'initialMarketCap', 'initialPrice'),)
 
 
-@receiver(post_save, sender=Assets)
+@receiver(post_save, sender=Asset)
 def updatePrices(sender, instance, signal, *args, **kwargs):
     if instance.smartContractAddress != None:
         # if not instance.initialMarketCap and instance.asset_platform: 
@@ -60,4 +64,7 @@ def updatePrices(sender, instance, signal, *args, **kwargs):
         
         # instance.initialMarketCap = data[contractAddress][currency.lower() + "_market_cap"] 
         # instance.initialPrice = data[contractAddress][currency.lower()]
-        Assets.objects.filter(id=instance.id).update(initialMarketCap=data[contractAddress][currency.lower() + "_market_cap"] , initialPrice=data[contractAddress][currency.lower()])
+        Asset.objects.filter(id=instance.id).update(initialMarketCap=data[contractAddress][currency.lower() + "_market_cap"] , initialPrice=data[contractAddress][currency.lower()])
+
+    # if instance.smartContractAddress == None:
+        # Try to autofill smart contract address from coin geko

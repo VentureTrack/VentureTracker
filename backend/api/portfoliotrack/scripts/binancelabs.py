@@ -1,30 +1,29 @@
 # Import Libraries
 from bs4 import BeautifulSoup
-import requests
 
-from ..models import Assets, Company
+from .helper import getHTML, insertDB
 
-def main():
+from ..models import Company
+
+def binance():
     url = "https://labs.binance.com/"
-
-    response = requests.get(url)
-
-    soup = BeautifulSoup(response.text, "html.parser")
+    xpath = "/html/body/div[1]/section[2]/div/div[5]/div/div[2]/div"
+    
+    html = getHTML(url, xpath)
     
     # find div with class "d-flex flex-wrap align-items-center"
-    portfolio = soup.find("div", {"class": "d-flex flex-wrap align-items-center"}).find_all("a")
-
-    src = "https://labs.binance.com/"
+    portfolio = html.find_all("a")
 
     # get foreign key
     fk = Company.objects.get(name="Binance")
-    data = []
-
+    
     for asset in portfolio:
         url = asset["href"]
         name = asset.find("img")['alt']
-        image = asset.find("img")['src']
-        # print(name, url)
+        image = "https://labs.binance.com/" + asset.find("img")['src']
         
-        Assets.objects.update_or_create(company=fk, name=name, url=url, image=src + image)
-# main()
+        insertDB(fk, name, url, image)        
+        # print(name, url)
+
+
+# binance()

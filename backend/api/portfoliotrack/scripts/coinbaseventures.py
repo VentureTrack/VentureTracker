@@ -5,10 +5,12 @@ import requests
 import cloudscraper
 import json
 
-from ..models import Assets, Company
+from .helper import insertDB
+
+from ..models import Company
 
 
-def main():
+def coinbase():
     url = "https://www.coinbase.com/ventures"
 
     scraper = cloudscraper.create_scraper(browser={
@@ -42,12 +44,12 @@ def main():
     for asset in data['initialData']['data']['content']['fields']['content'][2]['fields']['content'][0]['fields']['content']:
         asset = asset['fields']
 
-        title = asset['title']
+        name = asset['title']
         subtitle = asset['subtitle']
         url = asset['url'].replace('\u002F', '/')
         image = "https:" + asset['image']['fields']['file']['url'].replace('\u002F', '/')
+       
+        insertDB(fk, name, url, image)
 
-        asset = Assets(company=fk, name=title, url=url, image=image)
-        data1.append(asset)
 
-    Assets.objects.bulk_create(data1, ignore_conflicts=True)
+

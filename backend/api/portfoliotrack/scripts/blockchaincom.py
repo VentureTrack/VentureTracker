@@ -1,19 +1,21 @@
 # Import Libraries
 from bs4 import BeautifulSoup
-import requests
-import re
 
-def main():
+from .helper import getHTML, insertDB
+
+from ..models import Company
+
+def blockchaincom():
     url = "https://www.blockchain.com/ventures"
+    xpath = "/html/body/div[1]/div[1]/main/div[2]"
 
-    response = requests.get(url)
-
-    # get div class "ventures__InvestorsGrid-sc-181vawo-7 kGeVER"
-    soup = BeautifulSoup(response.text, 'html.parser')
-    div = soup.find("div", class_="ventures__InvestorsGrid-sc-181vawo-7 kGeVER")
-
+    html = getHTML(url, xpath)
+    
     # get all divs with class "ventures__InvestorItem-sc-181vawo-8 wUbrE" under div
-    divs = div.find_all("div", class_="ventures__InvestorItem-sc-181vawo-8 wUbrE")
+    divs = html.find_all("div", class_="ventures__InvestorItem-sc-181vawo-8 wUbrE")
+
+    # get foreign key
+    fk = Company.objects.get(name="Blockchain.com")
 
     for div in divs:
         # get a tag element
@@ -23,15 +25,10 @@ def main():
         url = aTag.get("href")
 
         # get domain name within url
-        domain = url.split("www.")[-1].split("//")[-1].split(".")[0]
+        name = url.split("www.")[-1].split("//")[-1].split(".")[0]
 
-        # get img element src url
-        try: imageURL = "https://www.blockchain.com" + aTag.find("img").get("src")
-        except: text = None
+        try: image = "https://www.blockchain.com" + aTag.find("img").get("src")
+        except: image = str(aTag.find("svg"))
         
-        print(domain, url, imageURL)
-        
+        insertDB(fk, name, url, image)
 
-
-
-main()
