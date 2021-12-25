@@ -10,27 +10,45 @@ from .scripts.cointiger import cointiger
 from .scripts.okex import okex
 from .scripts.huobi import huobi, huobidefilabs
 
-from .models import Company
+from .models import Asset, Company
+
+from .scripts.helper import getSmartContractAddress
 
 def populateAssets():
-    # kucoin()
-    # gemini()
-    # coinbase()
-    # binance()
-    # blockchaincom()
-    # cryptocom()
-    # gateio()
-    # cointiger()
-    # okex()
-    # huobi()
-    # huobidefilabs()
+    kucoin()
+    gemini()
+    coinbase()
+    binance()
+    blockchaincom()
+    cryptocom()
+    gateio()
+    cointiger()
+    okex()
+    huobi()
+    huobidefilabs()
     
-    pass
+    # pass
 
 def populateCompany():
-    # companies = ["Okex", "Huobi", "Cointiger", "Crypto.com", "Kucoin", "Coinbase", "Binance", "Gate.io", "Gemini", "Blockchain.com"]
+    companies = ["Okex", "Huobi", "Cointiger", "Crypto.com", "Kucoin", "Coinbase", "Binance", "Gate.io", "Gemini", "Blockchain.com"]
     
-    # for company in companies:
-    #     Company.objects.update_or_create(name=company, companyType="Exchange")
+    for company in companies:
+        Company.objects.update_or_create(name=company, companyType="Exchange")
     
-    pass
+    # pass
+
+def populateSmartContracts():
+    # get all assets
+    assets = Asset.objects.all().order_by('name')
+    details = []
+
+    for asset in assets:
+        details.append((
+            asset.company,
+            asset.name,
+            asset.url,
+        ))
+
+    # get all companies
+    getSmartContractAddress(details)
+    

@@ -65,6 +65,3 @@ def updatePrices(sender, instance, signal, *args, **kwargs):
         # instance.initialMarketCap = data[contractAddress][currency.lower() + "_market_cap"] 
         # instance.initialPrice = data[contractAddress][currency.lower()]
         Asset.objects.filter(id=instance.id).update(initialMarketCap=data[contractAddress][currency.lower() + "_market_cap"] , initialPrice=data[contractAddress][currency.lower()])
-
-    # if instance.smartContractAddress == None:
-        # Try to autofill smart contract address from coin geko

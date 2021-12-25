@@ -11,7 +11,7 @@ from django.contrib import admin
 router = routers.DefaultRouter()
 
 # Get all Companies (Exchanges)
-router.register(r'company/all', views.CompanyViewSet, basename="company-detail")
+router.register(r'company/all', views.CompanyViewSet, basename="CompanyAll")
 
 # Get all Assets (Coins)
 router.register(r'asset/all', views.AllAssetsViewSet, basename="AssetsAll")

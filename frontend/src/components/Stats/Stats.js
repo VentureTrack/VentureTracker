@@ -1,16 +1,14 @@
 import React from 'react'
-
-// import useState
 import { useState } from 'react'
 
-function Stats() {      
+function Stats({ totalAssets, name }) {      
     const [html, setHtml] = useState(false);
 
     return (
         <div class="">
             <header className="bg-white">
                 <div className="break-normal flex justify-center mx-auto py-6 px-4 text-center">
-                    <h1 className="text-3xl font-bold text-gray-900">Binance</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
                 </div>
             </header>
     
@@ -28,7 +26,7 @@ function Stats() {
                         AVG. MARKET CAP
                         </p>
                         <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        1,000,000,000
+                        $ --
                         </p>
                     </div>
                     </div>
@@ -45,7 +43,7 @@ function Stats() {
                         AVG. 24H %
                         </p>
                         <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        $ 46,760.89
+                        $ --
                         </p>
                     </div>
                     </div>
@@ -62,7 +60,7 @@ function Stats() {
                         NUMBER OF ASSETS
                         </p>
                         <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        376
+                        { totalAssets }
                         </p>
                     </div>
                     </div>

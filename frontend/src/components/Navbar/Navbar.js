@@ -4,7 +4,7 @@ import { NavLink  } from 'react-router-dom';
 import { Disclosure } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 
-import logo from '../images/site_icon.png';
+import logo from '../../images/site_icon.png';
 import './Navbar.css';
 
 
@@ -15,9 +15,9 @@ function classNames(...classes) {
 export default function Navbar() {
   const navigation = [
     { name: 'All', href: '/' },
-    { name: 'Exchanges', href: '/registrar' },
-    { name: 'Incubators', href: '/TLDs' },
-    { name: 'Graphs', href: '/Blog' },
+    { name: 'Exchanges', href: '/exchanges' },
+    // { name: 'Incubators', href: '/TLDs' },
+    // { name: 'Graphs', href: '/Blog' },
   ]
 
   return (

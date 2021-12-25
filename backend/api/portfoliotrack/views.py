@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 
 from .models import Company, Asset
 
-from .populate import populateAssets, populateCompany
+from .populate import populateAssets, populateCompany, populateSmartContracts
 
 from .pagination import StandardResultsSetPagination
 
@@ -13,13 +13,16 @@ from .pagination import StandardResultsSetPagination
 @action(detail=False, methods=['get'])
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all().order_by('name')
-    print(queryset)
     serializer_class = CompanySerializer
 
 @action(detail=False, methods=['get'])
 class AllAssetsViewSet(viewsets.ModelViewSet):
+    # get all except assets with duplicate name
     queryset = Asset.objects.all().order_by('name')
+
     serializer_class = AssetsSerializer
+    # pagination_class = StandardResultsSetPagination
+
 
 
 @action(detail=False, methods=['get'])
@@ -29,7 +32,11 @@ class CompanyAssetsViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def get_queryset(self):
         slug = self.kwargs['pk']
-
+        
+        #  crypto.com, gate.io, blockchain.com
+        slug = slug.replace('com', '.com')
+        slug = slug.replace('io', '.io')
+        
         # Allow dashes in slug
         # company = company.replace('-', ' ')
 
@@ -73,6 +80,8 @@ class AssetsViewSet(viewsets.ModelViewSet):
         return paginator.get_paginated_response(serializer.data)
 
 class PopulateDBViewSet(viewsets.ModelViewSet):
-    populateCompany()
-    populateAssets()
-    # pass
+    # populateCompany()
+    # populateAssets()
+    # populateSmartContracts()
+    
+    pass

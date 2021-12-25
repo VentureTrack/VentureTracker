@@ -19,7 +19,7 @@ from ..models import Asset, Company
 
 def kucoin():
     options = Options()
-    options.headless = True
+    # options.headless = True
     options.add_argument("--start-maximized")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
