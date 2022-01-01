@@ -1,11 +1,14 @@
 import React from 'react'
 import './AllCoinsStyle.css'
 import Table from '../components/Table/Table';
+import Table1 from '../components/Table/Table1';
+import Stats from '../components/Stats/Stats';
 
 function AllCoins() {
     return (
-        <div class="min-h-full flex flex-col Over">
-            <Table />
+        <div class="flex flex-col">
+            <Stats />
+            <Table1 className="rounded-t-xl" />
         </div>
     )
 }

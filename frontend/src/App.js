@@ -21,7 +21,7 @@ function App() {
           <Route exact path="/exchange/:slug" component={ ExchangeDetail } />        
           <Route exact path="/coin/:slug" component={ CoinDetail } />        
         </Switch>
-        {/* <Footer /> */}
+        <Footer />
       </Router>
     </>
   );

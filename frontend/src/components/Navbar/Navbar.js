@@ -22,7 +22,7 @@ export default function Navbar() {
 
   return (
     <div clasName="">
-      <nav className="flex justify-center py-8 bg-gray-900">
+      <nav className="flex justify-center py-8 bg-gray-900 border-b border-gray-800">
         
         <div>
           <h3 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-green-300 via-blue-400 to-purple-600">VentureTrack</h3>
