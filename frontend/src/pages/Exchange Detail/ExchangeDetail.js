@@ -80,18 +80,25 @@ function CoinDetail() {
     return (
         <div class="flex flex-col">
             <Stats totalAssets={totalAssets} name={slug} />
-            <div className="">
-                <Table
-                    columns={columns}
-                    data={data}
-                    fetchData={fetchData}
-                    loading={loading}
-                    pageCount={pageCount}
-                    totalAssets={totalAssets}
-                />
-                <TwitterTimelineEmbed 
-                  screenName="binancelabs"
-                />
+
+            <div className="md:grid md:grid-cols-3">
+                <div className="md:col-span-2">
+                    <Table
+                        columns={columns}
+                        data={data}
+                        fetchData={fetchData}
+                        loading={loading}
+                        pageCount={pageCount}
+                        totalAssets={totalAssets}
+                        />
+                </div>
+                
+                <div className="md:col-span-1 bg-gray-900 p-5">
+                    <TwitterTimelineEmbed 
+                      screenName="binancelabs"
+                      options={{height: 400, width: 400}}
+                    />
+                </div>
             </div>
         </div>
     )

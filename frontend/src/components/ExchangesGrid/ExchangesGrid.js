@@ -12,7 +12,7 @@ const ExchangeGrid = () => {
             const url = `http://localhost:8000/company/all`;
             const res = await axios.get(url);
             setTotalCompanies(res.data.length);
-            setCompanies(res.data);
+            setCompanies(res.data.results);
             setLoading(false);
 
         }

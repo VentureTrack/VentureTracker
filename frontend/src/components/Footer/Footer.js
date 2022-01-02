@@ -3,6 +3,8 @@
 import React from 'react'
 
 const Footer = () => {
+    // get current year
+    const year = new Date().getFullYear();
     return (
         <footer class="border-t border-gray-700 bg-gray-900">
 
@@ -20,16 +22,16 @@ const Footer = () => {
                         <h2 class="mb-2 font-bold tracking-widest text-white">Other Links</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">Home</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="http://localhost:3000/">Home</a>
                             </li>
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">About Us</a>
+                            <a class="text-gray-400 hover:text-gray-100">About Us</a>
                             </li>
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">Blogs</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="http://localhost:3000/exchanges">All Exchanges</a>
                             </li>
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">Contact Us</a>
+                            <a class="text-gray-400 hover:text-gray-100"></a>
                             </li>
                         </ul>
                     </div>
@@ -38,34 +40,22 @@ const Footer = () => {
                         <h2 class="mb-2 font-bold tracking-widest text-white">Social Media</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">Home</a>
+                            <a class="text-gray-400 hover:text-gray-100">Discord</a>
                             </li>
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">About Us</a>
-                            </li>
-                            <li>
-                            <a class="text-gray-600 hover:text-gray-800">Blogs</a>
-                            </li>
-                            <li>
-                            <a class="text-gray-600 hover:text-gray-800">Contact Us</a>
+                            <a class="text-gray-400 hover:text-gray-100">Twitter</a>
                             </li>
                         </ul>
                     </div>
 
                     <div class="w-full px-4 lg:w-1/3 md:w-1/2">
-                        <h2 class="mb-2 font-bold tracking-widest text-white">Useful Links</h2>
+                        <h2 class="mb-2 font-bold tracking-widest text-white">Privacy</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">Home</a>
+                            <a class="text-gray-400 hover:text-gray-100">Privacy Policy</a>
                             </li>
                             <li>
-                            <a class="text-gray-600 hover:text-gray-800">About Us</a>
-                            </li>
-                            <li>
-                            <a class="text-gray-600 hover:text-gray-800">Blogs</a>
-                            </li>
-                            <li>
-                            <a class="text-gray-600 hover:text-gray-800">Contact Us</a>
+                            <a class="text-gray-400 hover:text-gray-100">Terms of Service</a>
                             </li>
                         </ul>
                     </div>
@@ -74,7 +64,7 @@ const Footer = () => {
             </div>
 
             <div class="flex justify-center pb-3">
-                <p class="text-base text-gray-400">&copy; VentureTrack 2022</p>
+                <p class="text-base text-gray-400">Copyright &copy; {year} VentureTrack, All rights reserved.</p>
             </div>
         </footer>
     )

@@ -51,7 +51,7 @@ function Table({
   
   // Render the UI for your table
   return (
-    <div className="bg-gray-900 py-5 flex flex-col overflow-x-auto">
+    <div className="bg-gray-900 py-5 overflow-x-auto">
       {/* Table */}
       <table
         {...getTableProps()}

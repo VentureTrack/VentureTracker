@@ -3,8 +3,8 @@ import Footer from './components/Footer/Footer';
 
 import AllCoins from './pages/All Coins/AllCoins';
 import CoinDetail from './pages/Coin Detail/CoinDetail';
-
 import ExchangeDetail from './pages/Exchange Detail/ExchangeDetail';
+
 import AllExchanges from './pages/All Exchanges/AllExchanges';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
