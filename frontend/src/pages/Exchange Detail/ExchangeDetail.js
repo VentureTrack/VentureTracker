@@ -1,15 +1,17 @@
 import React from 'react'
-import './AllCoinsStyle.css'
-// import Table from '../components/Table/Table';
-// import Table1 from '../components/Table/Table1';
-import Table from '../components/Table/Table2';
-import Stats from '../components/Stats/Stats';
+import Table from '../../components/Table/Table';
+import Stats from '../../components/Stats/Stats';
 
-function AllCoins() {
+import './ExchangeDetail.css'
+import { useParams } from 'react-router-dom';
+import { TwitterTimelineEmbed } from 'react-twitter-embed';
+
+function CoinDetail() {
     const columns = React.useMemo( () => [
           {
             Header: 'Coin',
             accessor: 'name', // accessor is the "key" in the data
+            Cell: e => <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
           },
           {
             Header: 'Company',
@@ -37,6 +39,7 @@ function AllCoins() {
     const [pageCount, setPageCount] = React.useState(0)
     const [totalAssets, setTotalAssets] = React.useState(null);
     const fetchIdRef = React.useRef(0)
+    const { slug } = useParams();    
 
     const fetchData = React.useCallback(({ pageIndex }) => {
         // This will get called when the table needs new data
@@ -57,7 +60,7 @@ function AllCoins() {
             // const startRow = pageSize * pageIndex
             // const endRow = startRow + pageSize
 
-            const url = `http://localhost:8000/asset/all/?offset=${pageSize * pageIndex}`;
+            const url = `http://localhost:8000/company/${slug}?offset=${pageSize * pageIndex}`;
 
             // API call to backend localhost:8080/asset/all
             fetch(url)
@@ -76,18 +79,23 @@ function AllCoins() {
 
     return (
         <div class="flex flex-col">
-            <Stats totalAssets={totalAssets} name="ALL" />
-            <Table
-                columns={columns}
-                data={data}
-                fetchData={fetchData}
-                loading={loading}
-                pageCount={pageCount}
-                totalAssets={totalAssets}
-            />
+            <Stats totalAssets={totalAssets} name={slug} />
+            <div className="">
+                <Table
+                    columns={columns}
+                    data={data}
+                    fetchData={fetchData}
+                    loading={loading}
+                    pageCount={pageCount}
+                    totalAssets={totalAssets}
+                />
+                <TwitterTimelineEmbed 
+                  screenName="binancelabs"
+                />
+            </div>
         </div>
     )
 
 }
 
-export default AllCoins;
+export default CoinDetail;

@@ -9,7 +9,7 @@ function Stats({ totalAssets, name }) {
             {/* Name of Data Table */}
             <header className="">
                 <div className="break-normal flex justify-center px-4 py-4 mx-auto text-center">
-                    <h1 className="text-3xl font-bold text-white">{ name || 'All Coins' }</h1>
+                    <h1 className="text-3xl font-bold text-white">{ name }</h1>
                 </div>
             </header>
     

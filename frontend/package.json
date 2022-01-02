@@ -19,6 +19,7 @@
     "react-script": "^2.0.5",
     "react-scripts": "4.0.3",
     "react-table": "^7.7.0",
+    "react-twitter-embed": "^3.0.3",
     "react-twitter-widgets": "^1.10.0",
     "reqwest": "^2.0.5",
     "sass": "^1.43.4",

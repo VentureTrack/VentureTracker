@@ -1,106 +1,228 @@
-import React, { useState, useEffect } from 'react'
-import { Timeline } from 'react-twitter-widgets'
-import axios from 'axios';
-import Pagination from '../Pagination/Pagination';
-import Stats from '../Stats/Stats';
-import './Table.css'
+import React from "react";
+import { useTable, usePagination, useSortBy }  from "react-table";
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 
+// Let's add a fetchData method to our Table component that will be used to fetch
+// new data when pagination state changes
+// We can also add a loading state to let our table know it's loading new data
+function Table({
+  columns,
+  data,
+  fetchData,
+  loading,
+  pageCount: controlledPageCount,
+  totalAssets,
+}) {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    // Get the state from the instance
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0 }, // Pass our hoisted table state
+      manualPagination: true, // Tell the usePagination
+      // hook that we'll handle our own data fetching
+      // This means we'll also have to provide our own
+      // pageCount.
+      pageCount: controlledPageCount,
+    },
+    usePagination,
+  );
 
-const Table = ()  => {
-    // make a get request to "http://localhost:8000/asset/all/" using axios
-    const [assets, setAssets] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [totalAssets, setTotalAssets] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [assetsPerPage] = useState(25);
-    
-    useEffect(() => {
-        const fetchAssets = async () => {
-            setLoading(true);
-            // const url = `http://localhost:8000/asset/all/?offset=${(currentPage-1) * assetsPerPage}&limit=${assetsPerPage}`;
-            const url = `http://localhost:8000/asset/all/`;
-            const res = await axios.get(url);
-            setTotalAssets(res.data.length);
-            setAssets(res.data);
-            setLoading(false);
-            // console.log(assets);
-          }
+  // Listen for changes in pagination and use the state to fetch our new data
+  React.useEffect(() => {
+    fetchData({ pageIndex, pageSize });
+  }, [fetchData, pageIndex, pageSize]);
+
+  
+  // Render the UI for your table
+  return (
+    <div className="bg-gray-900 py-5 flex flex-col overflow-x-auto">
+      {/* Table */}
+      <table
+        {...getTableProps()}
+        className="rounded-t-lg border-gray-900 overflow-hidden shadow align-middle h-20 w-11/12 lg:mx-auto mx-5 bg-gray-700"
+        id="table"
+      >
+        {/* Columns Header */}
+        <thead className="shadow align-middle text-xl h-16 bg-gray-700">
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps()} className="text-white px-4">
+                  {column.render("Header")}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+
+        {/* Table body - rows */}
+        <tbody {...getTableBodyProps()} className="bg-gray-800">
+          {page.map((row, i) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      style={{
+                        padding: "10px",
+                        border: "solid 1px",
+                        borderColor: "rgb(55 65 81)",
+                        borderLeft: "none",
+                        borderRight: "none",
+                      }}
+                      className="text-white border border-gray-300"
+                    >
+                      {cell.render("Cell")}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+
+          {/* Loading Symbol */}
+          {/* <tr>
+            {loading ? (
+              // Use our custom loading state to show a loading indicator
+              <td colSpan="10000" className="text-white">
+                Loading...
+              </td>
+            ) : (
+              <td colSpan="10000" className="text-white">
+                Showing {page.length} of {totalAssets}{" "}
+                results
+              </td>
+            )}
+          </tr> */}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className="borderborder-gray-900 px-4 py-3 flex items-center justify-between sm:px-6">
+        
+        {/* Mobile Pagination */}
+        <div className="flex-1 flex justify-between sm:hidden">
+          <a
+            href="#table"
+            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            onClick={() => previousPage()} disabled={!canPreviousPage}
+          >
+            Previous
+          </a>
+          <a
+            href="#table"
+            className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            onClick={() => nextPage()} disabled={!canNextPage}
+          >
+            Next
+          </a>
+        </div>
+
+        {/* Desktop Pagination */}
+        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           
-        fetchAssets();
+          <div>
+            <p className="text-sm text-white">
+            {/*  Showing {page.length} of ~{controlledPageCount * pageSize}{" "} results */}
+                Showing <span className="font-medium">{(pageIndex*25)+1}</span> to <span className="font-medium">{(pageIndex+1)*25}</span> of{' '}
+                <span className="font-medium">{totalAssets}</span> results
+            </p>
+          </div>
 
-    
-    }, []);
+          <div>
+            <nav
+              className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <a
+                href="#"
+                className="relative inline-flex items-center bg-gray-500 px-2 py-2 rounded-l-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                onClick={() => previousPage()} disabled={!canPreviousPage}
+              >
+                <span className="sr-only">Previous</span>
+                <ChevronLeftIcon className="h-5 w-5 text-white" aria-hidden="true" />
+              </a>
+              {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
 
-    const cols = ["Coin", "Company", "Market Cap", "Category"]
-    const paginate = pageNumber => setCurrentPage(pageNumber);
+              { new Array(pageCount).fill("", 0, pageCount).map((key, number) =>
+                number === pageIndex ?
+                // Use our custom loading state to show a loading indicator
+                <a
+                    href="#"
+                    aria-current="page"
+                    className="z-10 bg-gray-600 text-white relative inline-flex items-center px-4 py-2 border border-gray-900 text-sm font-medium"
+                    onClick={() => gotoPage(number)} disabled={!canNextPage}
+                >
+                    { number+1 }
+                </a>
 
-    return (
-      <>
-        <Stats totalAssets={totalAssets} name="ALL" />
-        <div className="flex flex-col mb-4 everything">
-        <div className="-my-2 overflow-x-auto mx-4 sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="mx-4 shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-              <table className=" min-w-full divide-y divide-gray-200">
-                    {/* Column Names */}
-                    <thead className="bg-gray-50">
-                        <tr>
-                            {cols.map((col, index) => (
-                                <th
-                                key={index}
-                                scope="col"
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
-                                {col}
-                            </th>
-                            ))}
-                        </tr>
-                    </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                    {assets.map((asset) => (
-                      <tr>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                              <div className="flex-shrink-0 h-12 w-15">
-                                  <img className="h-10 w-15" src={asset.image} alt="" />
-                              </div>
-                              <div className="ml-4">
-                                  <div className="text-sm font-medium text-gray-900"><a className = "a" href={`http://localhost:3000/coin/${asset.name}`}>{asset.name}</a></div>
-                              </div>
-                          </div>
-                      </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900"><a className = "a" href={`http://localhost:3000/exchange/${asset.company}`}>{asset.company}</a></div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">MarketCap</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            Active
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Pagination */}
-            {/* <Pagination 
-                assetsPerPage={assetsPerPage} 
-                totalAssets={totalAssets} 
-                paginate={paginate} 
-                currentPage={currentPage}
-            /> */}
+                : 
 
+                <a
+                href="#"
+                aria-current="page"
+                className="z-10 text-white bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-900 text-sm font-medium"
+                onClick={() => gotoPage(number)} disabled={!canNextPage}
+                >
+                    { number+1 }
+                </a>
+
+              )}
+
+              <a
+                href="#"
+                className="relative bg-gray-500 inline-flex items-center px-2 py-2 rounded-r-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                onClick={() => nextPage()} disabled={!canNextPage}
+              >
+                <span className="sr-only">Next</span>
+                <ChevronRightIcon className="h-5 w-5 text-white" aria-hidden="true" />
+              </a>
+            </nav>
           </div>
         </div>
       </div>
-  </>
-  )
+    </div>
+  );
 }
 
 export default Table;
 
 
+{/* <div className="pagination">
+    <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+        {"<<"}
+    </button>{" "}
+    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+        {"<"}
+    </button>{" "}
+    <button onClick={() => nextPage()} disabled={!canNextPage}>
+        {">"}
+    </button>{" "}
+    <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+        {">>"}
+    </button>{" "}
+    <span>
+        Page{" "}
+        <strong>
+        {pageIndex + 1} of {pageOptions.length}
+        </strong>{" "}
+    </span>
+</div> */}

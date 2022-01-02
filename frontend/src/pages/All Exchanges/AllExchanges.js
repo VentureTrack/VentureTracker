@@ -1,6 +1,5 @@
 import React from 'react'
-import './AllCoinsStyle.css'
-import ExchangesGrid from '../components/ExchangesGrid/ExchangesGrid';
+import ExchangesGrid from '../../components/ExchangesGrid/ExchangesGrid';
 
 function AllExchanges() {
     return (
