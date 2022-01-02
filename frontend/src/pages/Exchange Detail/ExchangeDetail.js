@@ -93,9 +93,9 @@ function CoinDetail() {
                         />
                 </div>
                 
-                <div className="md:col-span-1 bg-gray-900 p-5">
+                <div className="md:col-span-1 bg-gray-900 pl-5 py-5">
                     <TwitterTimelineEmbed 
-                      screenName="binancelabs"
+                      url="binancelabs"
                       options={{height: 400, width: 400}}
                     />
                 </div>

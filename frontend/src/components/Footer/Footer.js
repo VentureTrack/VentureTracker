@@ -22,13 +22,13 @@ const Footer = () => {
                         <h2 class="mb-2 font-bold tracking-widest text-white">Other Links</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100" href="http://localhost:3000/">Home</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="/">Home</a>
                             </li>
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100">About Us</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="/about">About</a>
                             </li>
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100" href="http://localhost:3000/exchanges">All Exchanges</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="/exchanges">All Exchanges</a>
                             </li>
                             <li>
                             <a class="text-gray-400 hover:text-gray-100"></a>
@@ -40,10 +40,10 @@ const Footer = () => {
                         <h2 class="mb-2 font-bold tracking-widest text-white">Social Media</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100">Discord</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="#">Discord</a>
                             </li>
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100">Twitter</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="#">Twitter</a>
                             </li>
                         </ul>
                     </div>
@@ -52,10 +52,10 @@ const Footer = () => {
                         <h2 class="mb-2 font-bold tracking-widest text-white">Privacy</h2>
                         <ul class="mb-8 space-y-2 text-sm list-none">
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100">Privacy Policy</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="/privacy-policy">Privacy Policy</a>
                             </li>
                             <li>
-                            <a class="text-gray-400 hover:text-gray-100">Terms of Service</a>
+                            <a class="text-gray-400 hover:text-gray-100" href="/terms-of-service">Terms of Service</a>
                             </li>
                         </ul>
                     </div>

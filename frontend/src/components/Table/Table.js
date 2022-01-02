@@ -35,11 +35,13 @@ function Table({
       data,
       initialState: { pageIndex: 0 }, // Pass our hoisted table state
       manualPagination: true, // Tell the usePagination
+      autoResetPage: false,
       // hook that we'll handle our own data fetching
       // This means we'll also have to provide our own
       // pageCount.
       pageCount: controlledPageCount,
     },
+    useSortBy,
     usePagination,
   );
 
@@ -63,8 +65,15 @@ function Table({
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
               {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()} className="text-white px-4">
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="text-white px-4">
                   {column.render("Header")}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -137,7 +146,7 @@ function Table({
         </div>
 
         {/* Desktop Pagination */}
-        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div className="hidden sm:flex-1 sm:flex px-9 sm:items-center sm:justify-between">
           
           <div>
             <p className="text-sm text-white">
@@ -154,7 +163,7 @@ function Table({
             >
               <a
                 href="#"
-                className="relative inline-flex items-center bg-gray-500 px-2 py-2 rounded-l-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="relative inline-flex items-center bg-gray-500 px-2 py-2 rounded-l-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-400"
                 onClick={() => previousPage()} disabled={!canPreviousPage}
               >
                 <span className="sr-only">Previous</span>
@@ -162,7 +171,7 @@ function Table({
               </a>
               {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
 
-              { new Array(pageCount).fill("", 0, pageCount).map((key, number) =>
+              { new Array(pageCount).fill("", 0, pageCount).map((number) =>
                 number === pageIndex ?
                 // Use our custom loading state to show a loading indicator
                 <a
@@ -189,7 +198,7 @@ function Table({
 
               <a
                 href="#"
-                className="relative bg-gray-500 inline-flex items-center px-2 py-2 rounded-r-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="relative bg-gray-500 inline-flex items-center px-2 py-2 rounded-r-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-400"
                 onClick={() => nextPage()} disabled={!canNextPage}
               >
                 <span className="sr-only">Next</span>
