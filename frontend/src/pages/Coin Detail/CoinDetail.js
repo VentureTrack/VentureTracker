@@ -14,7 +14,12 @@ function CoinDetail() {
           {
             Header: 'Company',
             accessor: 'company',
-            Cell: e => <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
+            Cell: e => 
+            <div>
+              {e.value.map(data => 
+                <a href={`http://localhost:3000/exchange/${data.name}`} className="underline decoration-1">{data.name}{" "}</a>
+              )}
+            </div>
           },
           {
             Header: 'Category',
@@ -77,7 +82,7 @@ function CoinDetail() {
     }, [])
 
     return (
-        <div class="flex flex-col">
+        <div class="flex flex-col bg-gray-900">
             <Stats totalAssets={totalAssets} name={slug} />
             <Table
                 columns={columns}

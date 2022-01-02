@@ -170,9 +170,10 @@ function Table({
                 <ChevronLeftIcon className="h-5 w-5 text-white" aria-hidden="true" />
               </a>
               {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-
-              { new Array(pageCount).fill("", 0, pageCount).map((number) =>
-                number === pageIndex ?
+              { console.log(pageIndex) }
+              
+              { [...Array(pageCount).keys()].map((number) =>
+                number == pageIndex ? 
                 // Use our custom loading state to show a loading indicator
                 <a
                     href="#"
@@ -213,25 +214,3 @@ function Table({
 }
 
 export default Table;
-
-
-{/* <div className="pagination">
-    <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-        {"<<"}
-    </button>{" "}
-    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-        {"<"}
-    </button>{" "}
-    <button onClick={() => nextPage()} disabled={!canNextPage}>
-        {">"}
-    </button>{" "}
-    <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-        {">>"}
-    </button>{" "}
-    <span>
-        Page{" "}
-        <strong>
-        {pageIndex + 1} of {pageOptions.length}
-        </strong>{" "}
-    </span>
-</div> */}

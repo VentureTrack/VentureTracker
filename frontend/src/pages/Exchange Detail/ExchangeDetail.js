@@ -16,6 +16,12 @@ function CoinDetail() {
           {
             Header: 'Company',
             accessor: 'company',
+            Cell: e => 
+            <div>
+              {e.value.map(data => 
+                <a href={`http://localhost:3000/exchange/${data.name}`} className="underline decoration-1">{data.name}{" "}</a>
+              )}
+            </div>
           },
           {
             Header: 'Category',
@@ -41,6 +47,7 @@ function CoinDetail() {
     const fetchIdRef = React.useRef(0)
     const { slug } = useParams();    
 
+    var urlSlug = slug.split('.').join('');
     const fetchData = React.useCallback(({ pageIndex }) => {
         // This will get called when the table needs new data
         // You could fetch your data from literally anywhere,
@@ -59,8 +66,8 @@ function CoinDetail() {
         if (fetchId === fetchIdRef.current) {
             // const startRow = pageSize * pageIndex
             // const endRow = startRow + pageSize
-
-            const url = `http://localhost:8000/company/${slug}?offset=${pageSize * pageIndex}`;
+            console.log(urlSlug)
+            const url = `http://localhost:8000/company/${urlSlug}?offset=${pageSize * pageIndex}`;
 
             // API call to backend localhost:8080/asset/all
             fetch(url)
@@ -78,10 +85,10 @@ function CoinDetail() {
     }, [])
 
     return (
-        <div class="flex flex-col">
+        <div class="flex flex-col bg-gray-900">
             <Stats totalAssets={totalAssets} name={slug} />
 
-            <div className="md:grid md:grid-cols-3">
+            <div className="md:grid md:grid-cols-3 bg-gray-900">
                 <div className="md:col-span-2">
                     <Table
                         columns={columns}

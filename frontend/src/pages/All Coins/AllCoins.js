@@ -14,7 +14,11 @@ function AllCoins() {
             Header: 'Company',
             accessor: 'company',
             Cell: e => 
-                <a href={`http://localhost:3000/exchange/${e[0].name}`}>{e[0].name}</a>
+            <div>
+              {e.value.map(data => 
+                <a href={`http://localhost:3000/exchange/${data.name}`} className="underline decoration-1">{data.name}{" "}</a>
+              )}
+            </div>
           },
           {
             Header: 'Category',
@@ -64,6 +68,7 @@ function AllCoins() {
             fetch(url)
                 .then(async res => {
                     let data = await res.json();
+                    console.log(data);
                     setData(data.results);
                     setTotalAssets(data.count);
                     setPageCount(Math.ceil(data.count / pageSize));
@@ -76,7 +81,7 @@ function AllCoins() {
     }, [])
 
     return (
-        <div class="flex flex-col">
+        <div class="flex flex-col bg-gray-900">
             <Stats totalAssets={totalAssets} name="ALL" />
             <Table
                 columns={columns}
