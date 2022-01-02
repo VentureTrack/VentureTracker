@@ -26,6 +26,7 @@ import React from 'react';
        {
          Header: 'Coin',
          accessor: 'col1', // accessor is the "key" in the data
+         headerStyle: {textAlign: 'right'}
        },
        {
          Header: 'Company',
@@ -56,15 +57,15 @@ import React from 'react';
    } = useTable({ columns, data })
  
    return (
-    <div className="bg-gray-900 justify-center py-5 flex flex-col overflow-x-auto">
-        <table {...getTableProps()} className="rounded-t-lg overflow-hidden shadow align-middle h-20 w-11/12 mx-auto bg-gray-700">
+    <div className="bg-gray-900 py-5 flex flex-col overflow-x-auto">
+        <table {...getTableProps()} className="rounded-t-lg border border-gray-900 overflow-hidden shadow align-middle h-20 w-11/12 lg:mx-auto mx-5 bg-gray-700">
         
             {/* Columns Header */}
-            <thead className="shadow align-middle text-xl h-20 bg-gray-700">
+            <thead className="shadow align-middle text-xl h-16 bg-gray-800">
                 {headerGroups.map(headerGroup => (
-                    <tr {...headerGroup.getHeaderGroupProps()} className="">
+                    <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
                         {headerGroup.headers.map(column => (
-                            <th {...column.getHeaderProps()} className="text-white">
+                            <th {...column.getHeaderProps()} className="text-white px-4">
                                 {column.render('Header')}
                             </th>
                         ))}
@@ -84,9 +85,11 @@ import React from 'react';
                             {...cell.getCellProps()}
                             style={{
                             padding: '10px',
-                            border: 'solid 1px gray',
+                            border: 'solid 1px gray-800',
+                            borderLeft: 'none',
+                            borderRight: 'none'
                             }}
-                            className="text-white"
+                            className="text-white border border-gray-300"
                         >
                             {cell.render('Cell')}
                         </td>

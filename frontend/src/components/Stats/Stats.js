@@ -8,8 +8,8 @@ function Stats({ totalAssets, name }) {
         <div class="bg-gray-900">
             {/* Name of Data Table */}
             <header className="">
-                <div className="break-normal flex justify-center mx-auto py-4 px-4 text-center">
-                    <h1 className="text-3xl font-bold text-white">{name}</h1>
+                <div className="break-normal flex justify-center px-4 py-4 mx-auto text-center">
+                    <h1 className="text-3xl font-bold text-white">{ name || 'All Coins' }</h1>
                 </div>
             </header>
     
@@ -70,7 +70,7 @@ function Stats({ totalAssets, name }) {
                         {/* Card Content */}
                         <div className="mx-5 inline-block align-middle">
                             <p class="mb-2 text-sm font-medium text-white">NUMBER OF ASSETS</p>
-                            <p class="text-lg font-semibold text-white">{ totalAssets }</p>
+                            <p class="text-lg font-semibold text-white">{ totalAssets || 200 }</p>
                         </div>
 
                     </div>
