@@ -13,7 +13,8 @@ function AllCoins() {
           {
             Header: 'Company',
             accessor: 'company',
-            Cell: e => <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
+            Cell: e => 
+                <a href={`http://localhost:3000/exchange/${e[0].name}`}>{e[0].name}</a>
           },
           {
             Header: 'Category',

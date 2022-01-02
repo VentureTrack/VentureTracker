@@ -16,7 +16,6 @@ import time
 
 from ..models import Asset, Company
 
-
 def gemini():
     options = Options()
     # options.headless = True
@@ -83,11 +82,21 @@ def gemini():
         image = image.split('?')[0]
         filename = image.split("/")[-1]
         ext = "." + filename.split(".")[-1]
+        
+        image = image=files.File(ContentFile(r.content), name + ext)
 
-        Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(r.content), name + ext)})
-
-
-        # print(link, name, desc, img)
+        # Check if name already exists
+        duplicate = Asset.objects.filter(name=name).first()
+    
+        # check if duplicate retunred an object
+        if duplicate != None:
+            # the asset already exists, update it
+            duplicate.company.add(fk)        
+        # the asset does not exist, create it
+        else:
+            obj = Asset(name=name, url=url, image=image)
+            obj.save()
+            obj.company.add(fk)        
 
 
 

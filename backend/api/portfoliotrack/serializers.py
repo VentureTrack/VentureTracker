@@ -12,8 +12,9 @@ class CompanySerializer(serializers.HyperlinkedModelSerializer):
         # fields = '__all__'
     
 class AssetsSerializer(serializers.HyperlinkedModelSerializer):
-    company = ReadOnlyField(source='company.name')
-
+    # company = ReadOnlyField(source='company.name')
+    company = CompanySerializer(read_only=True, many=True)
+    
     class Meta:
         model = Asset
         # fields = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded')

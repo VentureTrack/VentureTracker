@@ -15,7 +15,7 @@ from .models import Asset, Company
 from .scripts.helper import getSmartContractAddress
 
 def populateAssets():
-    kucoin()
+    # kucoin()
     gemini()
     coinbase()
     binance()

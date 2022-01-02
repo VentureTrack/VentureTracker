@@ -103,7 +103,7 @@ def kucoin():
         fileEXT = "." + filename.split('.')[-1]
 
 
-        Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(r.content), name + fileEXT)})
-
+        image=files.File(ContentFile(r.content), name + fileEXT)
+        insertDB(fk, name, url, image)   
 
         # print(title.text, details.text, links[index], images[index])

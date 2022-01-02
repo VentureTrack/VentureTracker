@@ -128,20 +128,34 @@ def insertDB(fk, name, url=None, image=None, smartContractAddress=None, **kwargs
             format, imgstr = image.split(';base64,') 
             ext = format.split('/')[-1] 
             
-            Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(base64.b64decode(imgstr)), name + "." + ext)})
+            image = files.File(ContentFile(base64.b64decode(imgstr)), name + "." + ext)
 
         elif image.startswith("<svg"):
-            Asset.objects.update_or_create(company=fk, name=name, url=url, defaults={'image': files.File(ContentFile(str(image)), name + ".svg")})
+            image = files.File(ContentFile(str(image)), name + ".svg")
 
         elif image.startswith("https://"):
             r = requests.get(image)
             filename = image.split("/")[-1]
             ext = "." + filename.split(".")[-1]
 
-            Asset.objects.update_or_create(company=fk, name=name, url=url,  defaults={'image': files.File(ContentFile(r.content), name + ext)})
+            image = files.File(ContentFile(r.content), name + ext)
+        else:       
+            image = None
+  
+        # Check if name already exists
+        duplicate = Asset.objects.filter(name=name).first()
+    
+        # check if duplicate retunred an object
+        if duplicate != None:
+            # the asset already exists, update it
+            duplicate.company.add(fk)
+        
+        # the asset does not exist, create it
         else:
-            Asset.objects.update_or_create(company=fk, name=name, url=url)
+            obj = Asset(name=name, url=url, image=image)
+            obj.save()
+            obj.company.add(fk)
+
     except Exception as e:
         print("ERROR")
         print(e)
-        print(image)

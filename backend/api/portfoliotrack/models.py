@@ -25,11 +25,11 @@ class Company(models.Model):
 
 
 class Asset(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    name = models.CharField(max_length=60)
+    company = models.ManyToManyField(Company, blank=False)
+    name = models.CharField(max_length=60, unique=True)
     url = models.URLField(max_length=200, blank=True, null=True)
     image = models.ImageField(upload_to='images/')
-    catagorey = models.CharField(max_length=60, blank=True, null=True)
+    category = models.CharField(max_length=60, blank=True, null=True)
 
     # Smart Contract Detail
     smartContractAddress = models.CharField(max_length=500, blank=True, null=True, unique=True)
@@ -45,7 +45,7 @@ class Asset(models.Model):
     
     # I beleive this is deprecated
     class Meta:
-        unique_together = (('company', 'name', 'url', 'image', 'catagorey', 'smartContractAddress', 'asset_platform', 'initialMarketCap', 'initialPrice'),)
+        unique_together = (('name', 'url', 'image', 'category', 'smartContractAddress', 'asset_platform', 'initialMarketCap', 'initialPrice'),)
 
 
 @receiver(post_save, sender=Asset)
