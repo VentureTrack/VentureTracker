@@ -8,7 +8,7 @@ from rest_framework.serializers import ReadOnlyField
 class CompanySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Company
-        fields = ('name', 'affiliateLink', 'twitter', 'logo', 'companyType',)
+        fields = ('name', 'affiliateLink', 'twitter', 'logo', 'companyType', 'website',)
         # fields = '__all__'
     
 class AssetsSerializer(serializers.HyperlinkedModelSerializer):

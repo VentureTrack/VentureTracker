@@ -15,8 +15,8 @@ class Company(models.Model):
     twitter = models.CharField(max_length=200, blank=True, null=True)
     logo = models.ImageField(upload_to='media', blank=True, null=True)
     companyType = models.CharField(max_length=200, blank=True, null=True)
+    website = models.CharField(max_length=200, blank=True, null=True, default=None)
 
-    
     def __str__(self):
         return self.name
 

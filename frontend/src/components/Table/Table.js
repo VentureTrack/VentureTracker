@@ -59,7 +59,7 @@ function Table({
         id="table"
       >
         {/* Columns Header */}
-        <thead className="shadow align-middle text-xl h-16 bg-gray-700">
+        <thead className="shadow align-middle text-xl h-16 bg-gray-600">
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
               {headerGroup.headers.map((column) => (

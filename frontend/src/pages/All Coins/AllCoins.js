@@ -8,7 +8,7 @@ function AllCoins() {
           {
             Header: 'Coin',
             accessor: 'name', // accessor is the "key" in the data
-            Cell: e => <a href={`http://localhost:3000/coin/${e.value}`}>{e.value}</a>
+            Cell: e => <a href={`http://localhost:3000/coin/${e.value}`} className="underline decoration-1">{e.value}</a>
           },
           {
             Header: 'Company',
