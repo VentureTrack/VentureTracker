@@ -43,11 +43,13 @@ function CoinDetail() {
     const [data, setData] = React.useState([])
     const [loading, setLoading] = React.useState(false)
     const [pageCount, setPageCount] = React.useState(0)
+    const [twitterName, setTwitterName] = React.useState(0)
     const [totalAssets, setTotalAssets] = React.useState(null);
     const fetchIdRef = React.useRef(0)
     const { slug } = useParams();    
 
     var urlSlug = slug.split('.').join('');
+
     const fetchData = React.useCallback(({ pageIndex }) => {
         // This will get called when the table needs new data
         // You could fetch your data from literally anywhere,
@@ -66,7 +68,6 @@ function CoinDetail() {
         if (fetchId === fetchIdRef.current) {
             // const startRow = pageSize * pageIndex
             // const endRow = startRow + pageSize
-            console.log(urlSlug)
             const url = `http://localhost:8000/company/${urlSlug}?offset=${pageSize * pageIndex}`;
 
             // API call to backend localhost:8080/asset/all
@@ -83,6 +84,18 @@ function CoinDetail() {
         }
         })
     }, [])
+
+    let twitter = {
+        binance: "binancelabs",
+        coinbase: "coinbase",
+        blockchaincom: "blockchain",
+        gemini: "gemini",
+        gateio: "gate_ventures",
+        kucoin: "KCLabsOfficial",
+        cryptocom: "cryptocom",
+        cointiger: "CoinTigerEX",
+        okex: "OKEx"
+    }
 
     return (
         <div class="flex flex-col bg-gray-900">
@@ -102,9 +115,12 @@ function CoinDetail() {
                 
                 <div className="md:col-span-1 bg-gray-900 pl-5 py-5">
                     <TwitterTimelineEmbed 
-                      url="binancelabs"
-                      options={{height: 400, width: 400}}
+                      sourceType="profile"
+                      screenName={twitter[urlSlug.toLowerCase()]}
+                      theme="dark"
+                      options={{height: 500, width: 400}}
                     />
+
                 </div>
             </div>
         </div>

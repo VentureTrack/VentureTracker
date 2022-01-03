@@ -25,7 +25,7 @@ export default function Navbar() {
       <nav className="flex justify-center py-8 bg-gray-900 border-b border-gray-800">
         
         <div>
-          <h3 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-green-300 via-blue-400 to-purple-600">VentureTrack</h3>
+          <a href="/" className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-tr from-green-300 via-blue-400 to-purple-600">VentureTrack</a>
         </div>
 
         <div className="hidden md:flex space-x-8 mx-8 py-2 lg-flex">

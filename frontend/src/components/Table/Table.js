@@ -53,76 +53,78 @@ function Table({
   
   // Render the UI for your table
   return (
-    <div className="bg-gray-900 py-5 overflow-x-auto">
+    <div className="bg-gray-900 py-5">
       {/* Table */}
-      <table
-        {...getTableProps()}
-        className="rounded-t-lg border-gray-900 overflow-hidden shadow align-middle h-20 w-11/12 lg:mx-auto mx-5 bg-gray-700"
-        id="table"
-      >
-        {/* Columns Header */}
-        <thead className="shadow align-middle text-xl h-16 bg-gray-600">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="text-white px-4">
-                  {column.render("Header")}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? ' 🔽'
-                        : ' 🔼'
-                      : ''}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-
-        {/* Table body - rows */}
-        <tbody {...getTableBodyProps()} className="bg-gray-800">
-          {page.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      style={{
-                        padding: "10px",
-                        border: "solid 1px",
-                        borderColor: "rgb(55 65 81)",
-                        borderLeft: "none",
-                        borderRight: "none",
-                      }}
-                      className="text-white border border-gray-300"
-                    >
-                      {cell.render("Cell")}
-                    </td>
-                  );
-                })}
+      <div className="overflow-x-auto">
+        <table
+          {...getTableProps()}
+          className="rounded-t-lg border-gray-900 overflow-hidden shadow align-middle h-20 w-11/12 lg:mx-auto mx-5 bg-gray-700"
+          id="table"
+        >
+          {/* Columns Header */}
+          <thead className="shadow align-middle text-xl h-16 bg-gray-600">
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="text-white px-4">
+                    {column.render("Header")}
+                    <span>
+                      {column.isSorted
+                        ? column.isSortedDesc
+                          ? ' 🔽'
+                          : ' 🔼'
+                        : ''}
+                    </span>
+                  </th>
+                ))}
               </tr>
-            );
-          })}
+            ))}
+          </thead>
 
-          {/* Loading Symbol */}
-          {/* <tr>
-            {loading ? (
-              // Use our custom loading state to show a loading indicator
-              <td colSpan="10000" className="text-white">
-                Loading...
-              </td>
-            ) : (
-              <td colSpan="10000" className="text-white">
-                Showing {page.length} of {totalAssets}{" "}
-                results
-              </td>
-            )}
-          </tr> */}
-        </tbody>
-      </table>
+          {/* Table body - rows */}
+          <tbody {...getTableBodyProps()} className="bg-gray-800">
+            {page.map((row, i) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td
+                        {...cell.getCellProps()}
+                        style={{
+                          padding: "10px",
+                          border: "solid 1px",
+                          borderColor: "rgb(55 65 81)",
+                          borderLeft: "none",
+                          borderRight: "none",
+                        }}
+                        className="text-white border border-gray-300"
+                      >
+                        {cell.render("Cell")}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+
+            {/* Loading Symbol */}
+            {/* <tr>
+              {loading ? (
+                // Use our custom loading state to show a loading indicator
+                <td colSpan="10000" className="text-white">
+                  Loading...
+                </td>
+              ) : (
+                <td colSpan="10000" className="text-white">
+                  Showing {page.length} of {totalAssets}{" "}
+                  results
+                </td>
+              )}
+            </tr> */}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       <div className="borderborder-gray-900 px-4 py-3 flex items-center justify-between sm:px-6">
@@ -170,7 +172,6 @@ function Table({
                 <ChevronLeftIcon className="h-5 w-5 text-white" aria-hidden="true" />
               </a>
               {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-              { console.log(pageIndex) }
               
               { [...Array(pageCount).keys()].map((number) =>
                 number == pageIndex ? 
