@@ -1,13 +1,13 @@
 import React from 'react'
 
-function About() {
+function NotFound() {
     return (
         <div className="h-96 bg-gray-900 text-white">
-            <h1>About</h1>
-            <p>This website aggregates shit bitch</p>
+            <h1>404</h1>
+            <p>Page Not Found</p>
         </div>
     )
 }
 
-export default About;
+export default NotFound;
     

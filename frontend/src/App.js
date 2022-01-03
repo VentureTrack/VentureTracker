@@ -8,6 +8,7 @@ import CoinDetail from './pages/Coin Detail/CoinDetail';
 import ExchangeDetail from './pages/Exchange Detail/ExchangeDetail';
 import AllExchanges from './pages/All Exchanges/AllExchanges';
 import About from './pages/About/About';
+import NotFound from './pages/Not Found/NotFound';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
@@ -24,6 +25,7 @@ function App() {
           <Route exact path="/exchanges" component={ AllExchanges } />
           <Route exact path="/exchange/:slug" component={ ExchangeDetail } />        
           <Route exact path="/coin/:slug" component={ CoinDetail } />        
+          <Route path="*" component={ NotFound } />        
         </Switch>
         <Footer />
       </Router>
