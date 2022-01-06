@@ -22,12 +22,12 @@ function CoinDetail() {
         accessor: "company",
         Cell: (e) => (
           <div>
-            {e.value.map((data) => (
+            {e.value.map((data, i) => (
               <a
                 href={`http://localhost:3000/exchange/${data.name}`}
                 className="underline"
               >
-                {data.name}{", "}
+                {data.name}{i < e.value.length - 1 ? ", " : ""}
               </a>
             ))}
           </div>
