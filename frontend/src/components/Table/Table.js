@@ -23,19 +23,20 @@ function GlobalFilter({
   }, 200);
 
   return (
-    <span style={{ color: "white" }}>
-      Search:{" "}
+    <span>
+      <a style={{ color: 'white' }} className="text-lg pr-2">Search:</a>{" "}
       <input
-        style={{ color: "black" }}
+        className="rounded-lg px-3"
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);
           onChange(e.target.value);
         }}
-        placeholder={`${count} records...`}
+        placeholder={`Enter Coin...`}
         style={{
           fontSize: "1.1rem",
           border: "0",
+          color: "black" 
         }}
       />
     </span>
@@ -131,9 +132,8 @@ function Table({ columns, data, totalAssets }) {
   // Render the UI for your table
   return (
     <div className="grid grid-cols-1 bg-gray-900">
-      <div className="mb-3 rounded-lg">
+      <div className="mb-3">
         <GlobalFilter
-          className="rounded-lg text-black rounded-lg"
           preGlobalFilteredRows={preGlobalFilteredRows}
           globalFilter={state.globalFilter}
           setGlobalFilter={setGlobalFilter}
