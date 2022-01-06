@@ -14,6 +14,10 @@ from .models import Asset, Company
 
 from .scripts.helper import getSmartContractAddress
 
+import requests
+import json
+import time
+
 def populateAssets():
     # kucoin()
     gemini()
@@ -54,4 +58,33 @@ def populateSmartContracts():
     
 
 def priceUpdate():
+    # Iterate through all Assets
+    assets = Asset.objects.all().order_by('name')
+
+    for asset in assets:
+        smartContractAddress = asset.smartContractAddress
+        assetPlatform = asset.asset_platform
+
+        if smartContractAddress != None and assetPlatform != None:
+            currency = "USD"
+            contractAddress = asset.smartContractAddress
+            assetPlatform = asset.asset_platform
+
+            url = f"https://api.coingecko.com/api/v3/simple/token_price/{assetPlatform}?contract_addresses={contractAddress}&vs_currencies={currency}&include_market_cap=true"
+
+            response = requests.get(url)
+            data = json.loads(response.text)
+            
+            # instance.initialMarketCap = data[contractAddress][currency.lower() + "_market_cap"] 
+            # instance.initialPrice = data[contractAddress][currency.lower()]
+
+            Asset.objects.filter(id=asset.id).update(currentMarketCap=data[contractAddress][currency.lower() + "_market_cap"] , currentPrice=data[contractAddress][currency.lower()])
+
+            time.sleep(2)
+    
+
+
+def cmcPopulate(link):
+    # Purpose: get smartContractAddress, asset_platform, and catagories of coinmarketcaplink provided 
+
     pass

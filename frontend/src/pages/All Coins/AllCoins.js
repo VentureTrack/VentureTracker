@@ -41,11 +41,27 @@ function AllCoins() {
       },
       {
         Header: "Price",
-        accessor: "initialPrice",
+        accessor: "currentPrice",
+        Cell: e => {
+          // convert to dollar
+          if (e.value != null) {
+            return `$${e.value.toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
       {
         Header: "Market Cap",
-        accessor: "smartContractAddress",
+        accessor: "currentMarketCap",
+        Cell: e => {
+          // convert to dollar with commas
+          if (e.value != null) {
+            return `$${(~~e.value).toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
     ],
     []

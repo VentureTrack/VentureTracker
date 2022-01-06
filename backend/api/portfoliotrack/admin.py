@@ -12,7 +12,7 @@ class CompanyAdmin(admin.ModelAdmin):
 class AssetsAdmin(admin.ModelAdmin):
     # list_display = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
     filter_horizontal = ('company',)
-    list_display = ('name', 'companies', 'url', 'category', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
+    list_display = ('name', 'category', 'companies', 'currentMarketCap', 'currentPrice', 'url', 'smartContractAddress', 'dateAdded',)
 
     search_fields = ['name']
     

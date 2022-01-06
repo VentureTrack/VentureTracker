@@ -4,7 +4,7 @@ from .serializers import CompanySerializer, AssetsSerializer
 from rest_framework.decorators import action
 
 from .models import Company, Asset
-from .populate import populateAssets, populateCompany, populateSmartContracts
+from .populate import populateAssets, populateCompany, populateSmartContracts, priceUpdate
 from .pagination import StandardResultsSetPagination
 
 
@@ -70,5 +70,6 @@ class PopulateDBViewSet(viewsets.ModelViewSet):
     # populateCompany()
     # populateAssets()
     # populateSmartContracts()
+    # priceUpdate()
     
     pass

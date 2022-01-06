@@ -36,8 +36,11 @@ class Asset(models.Model):
     
     asset_platform = models.CharField(max_length=60, blank=True, null=True)
     
-    initialMarketCap = models.FloatField(blank=True, null=True) 
-    initialPrice = models.FloatField(blank=True, null=True)
+    currentMarketCap = models.FloatField(blank=True, null=True) 
+    currentPrice = models.FloatField(blank=True, null=True)
+    
+    lastMonthMarketCap = models.FloatField(blank=True, null=True, default=0)
+
     dateAdded = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -45,7 +48,7 @@ class Asset(models.Model):
     
     # I beleive this is deprecated
     class Meta:
-        unique_together = (('name', 'url', 'image', 'category', 'smartContractAddress', 'asset_platform', 'initialMarketCap', 'initialPrice'),)
+        unique_together = (('name', 'url', 'image', 'category', 'smartContractAddress', 'asset_platform'),)
 
 
 @receiver(post_save, sender=Asset)
