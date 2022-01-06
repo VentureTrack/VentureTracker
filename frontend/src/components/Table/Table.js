@@ -10,6 +10,7 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 import { matchSorter } from "match-sorter";
 
+
 // Define a default UI for filtering
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -26,7 +27,7 @@ function GlobalFilter({
     <span>
       <a style={{ color: 'white' }} className="text-lg pr-2">Search:</a>{" "}
       <input
-        className="rounded-lg px-3"
+        className="rounded-lg px-3 py-1"
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);
@@ -42,6 +43,40 @@ function GlobalFilter({
     </span>
   );
 }
+
+// This is a custom filter UI for selecting
+// a unique option from a list
+function SelectColumnFilter({
+  column: { filterValue, setFilter, preFilteredRows, id },
+}) {
+  // Calculate the options for filtering
+  // using the preFilteredRows
+  const options = React.useMemo(() => {
+    const options = new Set()
+    preFilteredRows.forEach(row => {
+      options.add(row.values[id])
+    })
+    return [...options.values()]
+  }, [id, preFilteredRows])
+
+  // Render a multi-select box
+  return (
+    <select
+      value={filterValue}
+      onChange={e => {
+        setFilter(e.target.value || undefined)
+      }}
+    >
+      <option value="">All</option>
+      {options.map((option, i) => (
+        <option key={i} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  )
+}
+
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
@@ -131,13 +166,17 @@ function Table({ columns, data, totalAssets }) {
 
   // Render the UI for your table
   return (
-    <div className="grid grid-cols-1 bg-gray-900">
+    <div className="grid grid-cols-1 bg-gray-900 mt-3">
       <div className="mb-3">
         <GlobalFilter
           preGlobalFilteredRows={preGlobalFilteredRows}
           globalFilter={state.globalFilter}
           setGlobalFilter={setGlobalFilter}
         />
+        {/* Dropdown to filter by category/categories */}
+        
+        {/* Dropdown to filter by companies */}
+        {/* Dropdown to filter by marketcap */}
       </div>
 
       {/* Table */}
@@ -243,7 +282,7 @@ function Table({ columns, data, totalAssets }) {
             <p className="text-sm text-white">
               {/*  Showing {page.length} of ~{controlledPageCount * pageSize}{" "} results */}
               Showing <span className="font-medium">{pageIndex * 25 + 1}</span>{" "}
-              to <span className="font-medium">{(pageIndex + 1) * 25}</span> of{" "}
+              to <span className="font-medium">{pageIndex+1 == pageCount ? totalAssets : (pageIndex + 1) * 25}</span> of{" "}
               <span className="font-medium">{totalAssets}</span> results
             </p>
           </div>

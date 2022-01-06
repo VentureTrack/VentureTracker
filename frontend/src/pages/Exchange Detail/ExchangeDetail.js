@@ -14,7 +14,12 @@ function CoinDetail() {
         Header: "Coin",
         accessor: "name", // accessor is the "key" in the data
         Cell: (e) => (
-          <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
+          <a
+            href={`http://localhost:3000/coin/${e.value}`}
+            className="underline decoration-1"
+          >
+            {e.value}
+          </a>
         ),
       },
       {
@@ -25,7 +30,7 @@ function CoinDetail() {
             {e.value.map((data, i) => (
               <a
                 href={`http://localhost:3000/exchange/${data.name}`}
-                className="underline"
+                className=""
               >
                 {data.name}{i < e.value.length - 1 ? ", " : ""}
               </a>
@@ -36,18 +41,44 @@ function CoinDetail() {
       {
         Header: "Category",
         accessor: "category",
+        Cell: (e) => (
+          <div>
+            {e.value.map((data, i) => (
+              <a>
+                {data.tag}{i < e.value.length - 1 ? ", " : ""}
+              </a>
+            ))}
+          </div>
+        ),
       },
       {
         Header: "Price",
-        accessor: "col4",
+        accessor: "currentPrice",
+        Cell: e => {
+          // convert to dollar
+          if (e.value != null) {
+            return `$${e.value.toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
       {
         Header: "Market Cap",
-        accessor: "col5",
+        accessor: "currentMarketCap",
+        Cell: e => {
+          // convert to dollar with commas
+          if (e.value != null) {
+            return `$${e.value.toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
     ],
     []
   );
+
 
   // We'll start our table without any data
   const [data, setData] = React.useState([]);

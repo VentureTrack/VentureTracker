@@ -1,1 +1,0 @@
-# Parse coinmarketcap link to get 

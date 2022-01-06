@@ -1,7 +1,9 @@
 import React from 'react'
 import './Stats.css';
 
-function Stats({ totalAssets, name }) {      
+function Stats({ loading, totalAssets, name }) {      
+
+
 
     return (
         <div class="bg-gray-900">
@@ -69,7 +71,7 @@ function Stats({ totalAssets, name }) {
                         {/* Card Content */}
                         <div className="mx-5 inline-block align-middle">
                             <p class="mb-2 text-sm font-medium text-white">NUMBER OF ASSETS</p>
-                            <p class="text-lg font-semibold text-white">{ totalAssets || 200 }</p>
+                            <p class="text-lg font-semibold text-white">{ loading }</p>
                         </div>
 
                     </div>

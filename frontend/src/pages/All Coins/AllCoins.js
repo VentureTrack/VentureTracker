@@ -38,6 +38,15 @@ function AllCoins() {
       {
         Header: "Category",
         accessor: "category",
+        Cell: (e) => (
+          <div>
+            {e.value.map((data, i) => (
+              <a>
+                {data.tag}{i < e.value.length - 1 ? ", " : ""}
+              </a>
+            ))}
+          </div>
+        ),
       },
       {
         Header: "Price",
@@ -57,7 +66,7 @@ function AllCoins() {
         Cell: e => {
           // convert to dollar with commas
           if (e.value != null) {
-            return `$${(~~e.value).toLocaleString()}`;
+            return `$${e.value.toLocaleString()}`;
           } else { 
             return e.value; 
           }
@@ -75,7 +84,7 @@ function AllCoins() {
 
   // Only make the request once for the data
   useEffect(() => {
-    setLoading(false);
+    setLoading(true);
 
     // API call to backend localhost:8080/asset/all
     const url = `http://localhost:8000/asset/all/`;
@@ -87,15 +96,19 @@ function AllCoins() {
       setTotalAssets(data.length);
       
       console.log(data);
+      setLoading(false);
     });
-    
-    setLoading(true);
   }, []);
+
 
   return (
     <div className="flex flex-col bg-gray-900 grid grid-cols-1 md:px-16 px-5">
-      <Stats totalAssets={totalAssets} name="ALL" />
+      { loading ? 
+        <div>Loading...</div>
+      :  
+      <Stats loading={loading} totalAssets={totalAssets} name="ALL" />
       <Table columns={columns} data={data} totalAssets={totalAssets} />
+    }
     </div>
   );
 }

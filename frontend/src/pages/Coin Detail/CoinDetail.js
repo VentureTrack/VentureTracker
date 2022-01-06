@@ -11,6 +11,14 @@ function CoinDetail() {
       {
         Header: "Coin",
         accessor: "name", // accessor is the "key" in the data
+        Cell: (e) => (
+          <a
+            href={`http://localhost:3000/coin/${e.value}`}
+            className="underline decoration-1"
+          >
+            {e.value}
+          </a>
+        ),
       },
       {
         Header: "Company",
@@ -20,7 +28,7 @@ function CoinDetail() {
             {e.value.map((data, i) => (
               <a
                 href={`http://localhost:3000/exchange/${data.name}`}
-                className="underline decoration-1"
+                className=""
               >
                 {data.name}{i < e.value.length - 1 ? ", " : ""}
               </a>
@@ -31,14 +39,39 @@ function CoinDetail() {
       {
         Header: "Category",
         accessor: "category",
+        Cell: (e) => (
+          <div>
+            {e.value.map((data, i) => (
+              <a>
+                {data.tag}{i < e.value.length - 1 ? ", " : ""}
+              </a>
+            ))}
+          </div>
+        ),
       },
       {
         Header: "Price",
-        accessor: "col4",
+        accessor: "currentPrice",
+        Cell: e => {
+          // convert to dollar
+          if (e.value != null) {
+            return `$${e.value.toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
       {
         Header: "Market Cap",
-        accessor: "col5",
+        accessor: "currentMarketCap",
+        Cell: e => {
+          // convert to dollar with commas
+          if (e.value != null) {
+            return `$${e.value.toLocaleString()}`;
+          } else { 
+            return e.value; 
+          }
+        },
       },
     ],
     []

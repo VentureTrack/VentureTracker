@@ -83,8 +83,3 @@ def priceUpdate():
             time.sleep(2)
     
 
-
-def cmcPopulate(link):
-    # Purpose: get smartContractAddress, asset_platform, and catagories of coinmarketcaplink provided 
-
-    pass
