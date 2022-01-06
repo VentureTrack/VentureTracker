@@ -52,3 +52,6 @@ def populateSmartContracts():
     # get all companies
     getSmartContractAddress(details)
     
+
+def priceUpdate():
+    pass

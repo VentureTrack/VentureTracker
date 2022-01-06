@@ -1,18 +1,100 @@
 import React from "react";
-import { useTable, usePagination, useSortBy }  from "react-table";
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
+import {
+  useTable,
+  usePagination,
+  useSortBy,
+  useFilters,
+  useGlobalFilter,
+  useAsyncDebounce,
+} from "react-table";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
+import { matchSorter } from "match-sorter";
 
-// Let's add a fetchData method to our Table component that will be used to fetch
-// new data when pagination state changes
-// We can also add a loading state to let our table know it's loading new data
-function Table({
-  columns,
-  data,
-  fetchData,
-  loading,
-  pageCount: controlledPageCount,
-  totalAssets,
+// Define a default UI for filtering
+function GlobalFilter({
+  preGlobalFilteredRows,
+  globalFilter,
+  setGlobalFilter,
 }) {
+  const count = preGlobalFilteredRows.length;
+  const [value, setValue] = React.useState(globalFilter);
+  const onChange = useAsyncDebounce((value) => {
+    setGlobalFilter(value || undefined);
+  }, 200);
+
+  return (
+    <span style={{ color: "white" }}>
+      Search:{" "}
+      <input
+        style={{ color: "black" }}
+        value={value || ""}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onChange(e.target.value);
+        }}
+        placeholder={`${count} records...`}
+        style={{
+          fontSize: "1.1rem",
+          border: "0",
+        }}
+      />
+    </span>
+  );
+}
+
+// Define a default UI for filtering
+function DefaultColumnFilter({
+  column: { filterValue, preFilteredRows, setFilter },
+}) {
+  const count = preFilteredRows.length;
+
+  return (
+    <input
+      value={filterValue || ""}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+      }}
+      placeholder={`Search ${count} records...`}
+    />
+  );
+}
+
+function fuzzyTextFilterFn(rows, id, filterValue) {
+  return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]] });
+}
+
+fuzzyTextFilterFn.autoRemove = (val) => !val;
+
+function Table({ columns, data, totalAssets }) {
+  const filterTypes = React.useMemo(
+    () => ({
+      // Add a new fuzzyTextFilterFn filter type.
+      fuzzyText: fuzzyTextFilterFn,
+      // Or, override the default text filter to use
+      // "startWith"
+      text: (rows, id, filterValue) => {
+        return rows.filter((row) => {
+          const rowValue = row.values[id];
+          return rowValue !== undefined
+            ? String(rowValue)
+                .toLowerCase()
+                .startsWith(String(filterValue).toLowerCase())
+            : true;
+        });
+      },
+    }),
+    []
+  );
+
+  const defaultColumn = React.useMemo(
+    () => ({
+      // Let's set up our default Filter UI
+      Filter: DefaultColumnFilter,
+    }),
+    []
+  );
+
+  // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
     getTableBodyProps,
@@ -27,38 +109,42 @@ function Table({
     nextPage,
     previousPage,
     setPageSize,
-    // Get the state from the instance
+    state,
+    visibleColumns,
+    preGlobalFilteredRows,
+    setGlobalFilter,
     state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0 }, // Pass our hoisted table state
-      manualPagination: true, // Tell the usePagination
-      autoResetPage: false,
-      // hook that we'll handle our own data fetching
-      // This means we'll also have to provide our own
-      // pageCount.
-      pageCount: controlledPageCount,
+      defaultColumn,
+      filterTypes,
+      initialState: { pageIndex: 0, pageSize: 25 },
     },
+    useFilters, // useFilters!
+    useGlobalFilter, // useGlobalFilter!
     useSortBy,
-    usePagination,
+    usePagination
   );
 
-  // Listen for changes in pagination and use the state to fetch our new data
-  React.useEffect(() => {
-    fetchData({ pageIndex, pageSize });
-  }, [fetchData, pageIndex, pageSize]);
-
-  
   // Render the UI for your table
   return (
-    <div className="bg-gray-900 py-5">
+    <div className="grid grid-cols-1 bg-gray-900">
+      <div className="mb-3 rounded-lg">
+        <GlobalFilter
+          className="rounded-lg text-black rounded-lg"
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+      </div>
+
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-t-lg">
         <table
           {...getTableProps()}
-          className="rounded-t-lg border-gray-900 overflow-hidden shadow align-middle h-20 w-11/12 lg:mx-auto mx-5 bg-gray-700"
+          className="rounded-t-lg border-gray-900 min-w-full bg-gray-700"
           id="table"
         >
           {/* Columns Header */}
@@ -66,14 +152,17 @@ function Table({
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} className="text-left">
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="text-white px-4">
+                  <th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    className="text-white px-4"
+                  >
                     {column.render("Header")}
                     <span>
                       {column.isSorted
                         ? column.isSortedDesc
-                          ? ' 🔽'
-                          : ' 🔼'
-                        : ''}
+                          ? " 🔽"
+                          : " 🔼"
+                        : ""}
                     </span>
                   </th>
                 ))}
@@ -127,34 +216,35 @@ function Table({
       </div>
 
       {/* Pagination */}
-      <div className="borderborder-gray-900 px-4 py-3 flex items-center justify-between sm:px-6">
-        
+      <div className="borderborder-gray-900 py-3 flex items-center justify-between">
         {/* Mobile Pagination */}
         <div className="flex-1 flex justify-between sm:hidden">
           <a
             href="#table"
             className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            onClick={() => previousPage()} disabled={!canPreviousPage}
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
           >
             Previous
           </a>
           <a
             href="#table"
             className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            onClick={() => nextPage()} disabled={!canNextPage}
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
           >
             Next
           </a>
         </div>
 
         {/* Desktop Pagination */}
-        <div className="hidden sm:flex-1 sm:flex px-9 sm:items-center sm:justify-between">
-          
+        <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-white">
-            {/*  Showing {page.length} of ~{controlledPageCount * pageSize}{" "} results */}
-                Showing <span className="font-medium">{(pageIndex*25)+1}</span> to <span className="font-medium">{(pageIndex+1)*25}</span> of{' '}
-                <span className="font-medium">{totalAssets}</span> results
+              {/*  Showing {page.length} of ~{controlledPageCount * pageSize}{" "} results */}
+              Showing <span className="font-medium">{pageIndex * 25 + 1}</span>{" "}
+              to <span className="font-medium">{(pageIndex + 1) * 25}</span> of{" "}
+              <span className="font-medium">{totalAssets}</span> results
             </p>
           </div>
 
@@ -166,45 +256,53 @@ function Table({
               <a
                 href="#"
                 className="relative inline-flex items-center bg-gray-500 px-2 py-2 rounded-l-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-400"
-                onClick={() => previousPage()} disabled={!canPreviousPage}
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
               >
                 <span className="sr-only">Previous</span>
-                <ChevronLeftIcon className="h-5 w-5 text-white" aria-hidden="true" />
+                <ChevronLeftIcon
+                  className="h-5 w-5 text-white"
+                  aria-hidden="true"
+                />
               </a>
               {/* Current: "z-10 bg-indigo-50 border-indigo-500 text-indigo-600", Default: "bg-white border-gray-300 text-gray-500 hover:bg-gray-50" */}
-              
-              { [...Array(pageCount).keys()].map((number) =>
-                number == pageIndex ? 
-                // Use our custom loading state to show a loading indicator
-                <a
+
+              {[...Array(pageCount).keys()].map((number) =>
+                number == pageIndex ? (
+                  // Use our custom loading state to show a loading indicator
+                  <a
                     href="#"
                     aria-current="page"
                     className="z-10 bg-gray-600 text-white relative inline-flex items-center px-4 py-2 border border-gray-900 text-sm font-medium"
-                    onClick={() => gotoPage(number)} disabled={!canNextPage}
-                >
-                    { number+1 }
-                </a>
-
-                : 
-
-                <a
-                href="#"
-                aria-current="page"
-                className="z-10 text-white bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-900 text-sm font-medium"
-                onClick={() => gotoPage(number)} disabled={!canNextPage}
-                >
-                    { number+1 }
-                </a>
-
+                    onClick={() => gotoPage(number)}
+                    disabled={!canNextPage}
+                  >
+                    {number + 1}
+                  </a>
+                ) : (
+                  <a
+                    href="#"
+                    aria-current="page"
+                    className="z-10 text-white bg-gray-800 relative inline-flex items-center px-4 py-2 border border-gray-900 text-sm font-medium"
+                    onClick={() => gotoPage(number)}
+                    disabled={!canNextPage}
+                  >
+                    {number + 1}
+                  </a>
+                )
               )}
 
               <a
                 href="#"
                 className="relative bg-gray-500 inline-flex items-center px-2 py-2 rounded-r-md border border-gray-900 bg-white text-sm font-medium text-gray-500 hover:bg-gray-400"
-                onClick={() => nextPage()} disabled={!canNextPage}
+                onClick={() => nextPage()}
+                disabled={!canNextPage}
               >
                 <span className="sr-only">Next</span>
-                <ChevronRightIcon className="h-5 w-5 text-white" aria-hidden="true" />
+                <ChevronRightIcon
+                  className="h-5 w-5 text-white"
+                  aria-hidden="true"
+                />
               </a>
             </nav>
           </div>

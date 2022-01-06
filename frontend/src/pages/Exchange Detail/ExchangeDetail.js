@@ -1,131 +1,119 @@
-import React from 'react'
-import Table from '../../components/Table/Table';
-import Stats from '../../components/Stats/Stats';
+import React, { useEffect } from "react";
 
-import './ExchangeDetail.css'
-import { useParams } from 'react-router-dom';
-import { TwitterTimelineEmbed } from 'react-twitter-embed';
+import Table from "../../components/Table/Table";
+import Stats from "../../components/Stats/Stats";
+
+import "./ExchangeDetail.css";
+import { useParams } from "react-router-dom";
+import { TwitterTimelineEmbed } from "react-twitter-embed";
 
 function CoinDetail() {
-    const columns = React.useMemo( () => [
-          {
-            Header: 'Coin',
-            accessor: 'name', // accessor is the "key" in the data
-            Cell: e => <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
-          },
-          {
-            Header: 'Company',
-            accessor: 'company',
-            Cell: e => 
-            <div>
-              {e.value.map(data => 
-                <a href={`http://localhost:3000/exchange/${data.name}`} className="underline decoration-1">{data.name}{" "}</a>
-              )}
-            </div>
-          },
-          {
-            Header: 'Category',
-            accessor: 'category',
-          },
-          {
-            Header: 'Price',
-            accessor: 'col4',
-          },
-          {
-            Header: 'Market Cap',
-            accessor: 'col5',
-          },   
-        ],
-        []
-    )
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Coin",
+        accessor: "name", // accessor is the "key" in the data
+        Cell: (e) => (
+          <a href={`http://localhost:3000/exchange/${e.value}`}>{e.value}</a>
+        ),
+      },
+      {
+        Header: "Company",
+        accessor: "company",
+        Cell: (e) => (
+          <div>
+            {e.value.map((data) => (
+              <a
+                href={`http://localhost:3000/exchange/${data.name}`}
+                className="underline"
+              >
+                {data.name}{", "}
+              </a>
+            ))}
+          </div>
+        ),
+      },
+      {
+        Header: "Category",
+        accessor: "category",
+      },
+      {
+        Header: "Price",
+        accessor: "col4",
+      },
+      {
+        Header: "Market Cap",
+        accessor: "col5",
+      },
+    ],
+    []
+  );
 
-    // We'll start our table without any data
-    const [data, setData] = React.useState([])
-    const [loading, setLoading] = React.useState(false)
-    const [pageCount, setPageCount] = React.useState(0)
-    const [twitterName, setTwitterName] = React.useState(0)
-    const [totalAssets, setTotalAssets] = React.useState(null);
-    const fetchIdRef = React.useRef(0)
-    const { slug } = useParams();    
+  // We'll start our table without any data
+  const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [totalAssets, setTotalAssets] = React.useState(null);
+  const { slug } = useParams();
 
-    var urlSlug = slug.split('.').join('');
+  var urlSlug = slug.split(".").join("");
 
-    const fetchData = React.useCallback(({ pageIndex }) => {
-        // This will get called when the table needs new data
-        // You could fetch your data from literally anywhere,
-        // even a server. But for this example, we'll just fake it.
+  // Only make the request once for the data
+  useEffect(() => {
+    setLoading(false);
 
-        // Give this fetch an ID
-        const fetchId = ++fetchIdRef.current
-        const pageSize = 25;
+    // API call to backend localhost:8080/asset/all
+    const url = `http://localhost:8000/company/${urlSlug}`;
 
-        // Set the loading state
-        setLoading(true)
+    fetch(url).then(async (res) => {
+      let data = await res.json();
 
-        // We'll even set a delay to simulate a server here
-        setTimeout(() => {
-        // Only update the data if this is the latest fetch
-        if (fetchId === fetchIdRef.current) {
-            // const startRow = pageSize * pageIndex
-            // const endRow = startRow + pageSize
-            const url = `http://localhost:8000/company/${urlSlug}?offset=${pageSize * pageIndex}`;
+      setData(data.results);
+      setTotalAssets(data.count);
 
-            // API call to backend localhost:8080/asset/all
-            fetch(url)
-                .then(async res => {
-                    let data = await res.json();
-                    setData(data.results);
-                    setTotalAssets(data.count);
-                    setPageCount(Math.ceil(data.count / pageSize));
-                })
-                
-            
-            setLoading(false)
-        }
-        })
-    }, [])
+      console.log(data.results);
+    });
 
-    let twitter = {
-        binance: "binancelabs",
-        coinbase: "coinbase",
-        blockchaincom: "blockchain",
-        gemini: "gemini",
-        gateio: "gate_ventures",
-        kucoin: "KCLabsOfficial",
-        cryptocom: "cryptocom",
-        cointiger: "CoinTigerEX",
-        okex: "OKEx"
-    }
+    setLoading(true);
+  }, []);
 
-    return (
-        <div class="flex flex-col bg-gray-900">
-            <Stats totalAssets={totalAssets} name={slug} />
+  let twitter = {
+    binance: "binancelabs",
+    coinbase: "coinbase",
+    blockchaincom: "blockchain",
+    gemini: "gemini",
+    gateio: "gate_ventures",
+    kucoin: "KCLabsOfficial",
+    cryptocom: "cryptocom",
+    cointiger: "CoinTigerEX",
+    okex: "OKEx",
+  };
 
-            <div className="md:grid md:grid-cols-3 bg-gray-900">
-                <div className="md:col-span-2">
-                    <Table
-                        columns={columns}
-                        data={data}
-                        fetchData={fetchData}
-                        loading={loading}
-                        pageCount={pageCount}
-                        totalAssets={totalAssets}
-                        />
-                </div>
-                
-                <div className="md:col-span-1 bg-gray-900 pl-5 py-5">
-                    <TwitterTimelineEmbed 
-                      sourceType="profile"
-                      screenName={twitter[urlSlug.toLowerCase()]}
-                      theme="dark"
-                      options={{height: 500, width: 400}}
-                    />
+  var totalHeight = (5*data.length) + 6;
+  console.log(totalHeight);
 
-                </div>
-            </div>
+  return (
+    <div class="lex flex-col bg-gray-900 grid grid-cols-1 md:px-16 px-5">
+      <Stats totalAssets={totalAssets} name={slug} />
+      
+      <div className="md:grid md:grid-cols-3 bg-gray-900">
+        
+        <div className="md:col-span-2">
+          <Table columns={columns} data={data} totalAssets={totalAssets} />
         </div>
-    )
 
+        <div className="md:col-span-1 bg-gray-900 sm:pl-5 py-10">
+          <TwitterTimelineEmbed
+            sourceType="timeline"
+            screenName={twitter[urlSlug.toLowerCase()]}
+            theme="dark"
+            options={{ height: 500 }}
+            // autoHeight
+          />
+        </div>
+
+      </div>
+    </div>
+  );
 }
 
 export default CoinDetail;

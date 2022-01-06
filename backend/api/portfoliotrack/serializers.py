@@ -18,5 +18,6 @@ class AssetsSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Asset
-        fields = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded')
-        # fields = '__all__'
+        # fields = ('company', 'name', 'image', 'asset_platform', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded')
+        fields = '__all__'
+

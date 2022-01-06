@@ -5,25 +5,29 @@ const ExchangeGrid = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalCompanies, setTotalCompanies] = useState(null);
-
+  
+  // Only make the request once for the data
   useEffect(() => {
-    const fetchCompanies = async () => {
-      setLoading(true);
+    setLoading(false);
+    
+    // API call to backend localhost:8080/asset/all
       const url = `http://localhost:8000/company/all`;
-      const res = await axios.get(url);
-      setTotalCompanies(res.data.length);
-      setCompanies(res.data.results);
-      setLoading(false);
-    };
+  
+      fetch(url).then(async (res) => {
+        let data = await res.json();
+  
+        console.log(data);
 
-    fetchCompanies();
-  }, []);
+        setTotalCompanies(data.length);
+        setCompanies(data);
 
-    //   "name": "Binance",
-    //   "affiliateLink": null,
-    //   "twitter": null,
-    //   "logo": null,
-    //   "companyType": "Exchange"
+        setLoading(false);
+      });
+  
+      setLoading(true);
+    }, []);
+
+
 
   return (
     <div className="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5 bg-gray-900">

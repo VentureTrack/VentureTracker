@@ -1,5 +1,4 @@
 import React from 'react'
-import { useState } from 'react'
 import './Stats.css';
 
 function Stats({ totalAssets, name }) {      
@@ -14,7 +13,7 @@ function Stats({ totalAssets, name }) {
             </header>
     
             {/* Stats Cards */}
-            <div class="grid gap-4 mb-8 md:grid-cols-3 xl:grid-cols-3 lg:px-16 px-5 mx-auto">
+            <div class="grid gap-4 mb-8 md:grid-cols-3 xl:grid-cols-3 mx-auto">
                 
                 {/* Card 1 */}
                 <div class="min-w-0 rounded-xl overflow-hidden bg-gray-800 border-gray shadow">
