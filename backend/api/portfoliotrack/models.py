@@ -5,6 +5,8 @@ from django.db.models.signals import pre_save, post_save
 
 from django.db.models import signals
 
+from functools import wraps
+
 import requests
 import json
 
@@ -31,10 +33,11 @@ class Category(models.Model):
 
 class Asset(models.Model):
     company = models.ManyToManyField(Company, blank=False)
+    category = models.ManyToManyField(Category, blank=True)
+
     name = models.CharField(max_length=60, unique=True)
     url = models.URLField(max_length=200, blank=True, null=True)
     image = models.ImageField(upload_to='images/')
-    category = models.ManyToManyField(Category, blank=True)
 
     # Coin Contract Detail
     smartContractAddress = models.CharField(max_length=500, blank=True, null=True, unique=True)
@@ -48,6 +51,8 @@ class Asset(models.Model):
     monthlyChange = models.FloatField(blank=True, null=True, default=0)
 
     coinId = models.CharField(max_length=60, blank=True, null=True, default=None) 
+
+    sparkline = models.CharField(max_length=400, blank=True, null=True, default=None)
 
     dateAdded = models.DateTimeField(auto_now_add=True)
 
@@ -83,6 +88,11 @@ def priceUpdate(instance):
     currentMarketCap = data['market_data']['market_cap'][currency.lower()] or None
     currentPrice = data['market_data']['current_price'][currency.lower()] or None
 
+    # get the number between 'https://assets.coingecko.com/coins/images/' and '/' from 'https://assets.coingecko.com/coins/images/13029/thumb/axie_infinity_logo.png?1604471082'
+    sparklineId = data['image']['small'][42 : data['image']['small'].find('/', 42)]
+
+    sparkline = f'https://www.coingecko.com/coins/{sparklineId}/sparkline'
+
     Asset.objects.filter(id=instance.id).update(
         url=url,
         assetPlatform=assetPlatform,
@@ -90,23 +100,26 @@ def priceUpdate(instance):
         dailyChange=dailyChange,
         monthlyChange=monthlyChange,
         currentMarketCap=currentMarketCap,
-        currentPrice=currentPrice
+        currentPrice=currentPrice,
+        sparkline=sparkline
     )
 
-    print(instance.category.all())
+    # TODO: delete tag that are not in the list
     for tag in data['categories']:
         # check if tag exists, if not add it
         obj, p = Category.objects.get_or_create(tag=tag)
         
         # check to see if instance.category has this tag
-        print(instance)
         if obj not in instance.category.all():
             instance.category.add(obj.id)
 
-    print(instance.category.all())
-        
 
 @receiver(post_save, sender=Asset)
-def updatePrices(sender, instance, raw, signal, *args, **kwargs):
-    if not raw and instance.coinId != None:
-            priceUpdate(instance)
+def updatePrices(sender, instance, raw, signal, created, *args, **kwargs):    
+    if instance.coinId != None:
+        priceUpdate(instance)
+
+        print(instance.category.all())
+        instance.category.set(instance.category.all())
+
+        print(instance.category.all())

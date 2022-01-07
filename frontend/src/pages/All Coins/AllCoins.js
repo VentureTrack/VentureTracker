@@ -1,14 +1,19 @@
 import React, { useEffect } from "react";
 
+// Import 
+import SkeletonStats from "../../components/Stats/SkeletonLoaderStats";
+
+// Import Components
 import Table from "../../components/Table/Table";
 import Stats from "../../components/Stats/Stats";
+
 import "./AllCoins.css";
 
 function AllCoins() {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Coin",
+        Header: "Cryptocurrencies",
         accessor: "name", // accessor is the "key" in the data
         Cell: (e) => (
           <a
@@ -20,7 +25,7 @@ function AllCoins() {
         ),
       },
       {
-        Header: "Company",
+        Header: "Companies",
         accessor: "company",
         Cell: (e) => (
           <div>
@@ -35,21 +40,18 @@ function AllCoins() {
           </div>
         ),
       },
+      // {
+      //   Header: "Categories",
+      //   accessor: "category",
+      //   Cell: (e) => (
+      //     <div>
+      //       <a>{e.value.length > 0 ? e.value[0]["tag"] : ""}</a>
+      //       {e.value.length > 1 ? "..." : ""}
+      //     </div>
+      //   ),
+      // },
       {
-        Header: "Category",
-        accessor: "category",
-        Cell: (e) => (
-          <div>
-            {e.value.map((data, i) => (
-              <a>
-                {data.tag}{i < e.value.length - 1 ? ", " : ""}
-              </a>
-            ))}
-          </div>
-        ),
-      },
-      {
-        Header: "Price",
+        Header: "Last Price",
         accessor: "currentPrice",
         Cell: e => {
           // convert to dollar
@@ -61,7 +63,7 @@ function AllCoins() {
         },
       },
       {
-        Header: "Market Cap",
+        Header: "Last Market Cap",
         accessor: "currentMarketCap",
         Cell: e => {
           // convert to dollar with commas
@@ -72,6 +74,13 @@ function AllCoins() {
           }
         },
       },
+      {
+        Header: "7 Day Change",
+        accessor: "sparkline",
+        Cell: e => (
+          <img src={e.value} />
+        ),
+      }
     ],
     []
   );
@@ -100,15 +109,13 @@ function AllCoins() {
     });
   }, []);
 
-
   return (
     <div className="flex flex-col bg-gray-900 grid grid-cols-1 md:px-16 px-5">
-      { loading ? 
-        <div>Loading...</div>
-      :  
-      <Stats loading={loading} totalAssets={totalAssets} name="ALL" />
-      <Table columns={columns} data={data} totalAssets={totalAssets} />
-    }
+      <div>
+        {/* <Stats totalAssets={totalAssets} name="ALL" /> */}
+        <SkeletonStats name="All" />
+        <Table columns={columns} data={data} totalAssets={totalAssets} />
+      </div>
     </div>
   );
 }

@@ -166,7 +166,7 @@ function Table({ columns, data, totalAssets }) {
 
   // Render the UI for your table
   return (
-    <div className="grid grid-cols-1 bg-gray-900 mt-3">
+    <div className="grid grid-cols-1 bg-gray-900 my-5">
       <div className="mb-3">
         <GlobalFilter
           preGlobalFilteredRows={preGlobalFilteredRows}
