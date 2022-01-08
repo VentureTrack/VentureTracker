@@ -10,7 +10,6 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 import { matchSorter } from "match-sorter";
 
-
 // Define a default UI for filtering
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -24,23 +23,30 @@ function GlobalFilter({
   }, 200);
 
   return (
-    <span>
-      <a style={{ color: 'white' }} className="text-lg pr-2">Search:</a>{" "}
+    <div class="relative">
+      <span class="absolute text-gray-500 inset-y-0 left-0 flex items-center pl-2">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            class="w-6 h-6"
+          >
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+      </span>
       <input
-        className="rounded-lg px-3 py-1"
+        class="py-2 rounded-lg text-sm text-white bg-gray-700 pl-10 focus:border-gray-300"
+        placeholder={`Enter Coin...`}
         value={value || ""}
         onChange={(e) => {
           setValue(e.target.value);
           onChange(e.target.value);
         }}
-        placeholder={`Enter Coin...`}
-        style={{
-          fontSize: "1.1rem",
-          border: "0",
-          color: "black" 
-        }}
       />
-    </span>
+    </div>
   );
 }
 
@@ -52,19 +58,19 @@ function SelectColumnFilter({
   // Calculate the options for filtering
   // using the preFilteredRows
   const options = React.useMemo(() => {
-    const options = new Set()
-    preFilteredRows.forEach(row => {
-      options.add(row.values[id])
-    })
-    return [...options.values()]
-  }, [id, preFilteredRows])
+    const options = new Set();
+    preFilteredRows.forEach((row) => {
+      options.add(row.values[id]);
+    });
+    return [...options.values()];
+  }, [id, preFilteredRows]);
 
   // Render a multi-select box
   return (
     <select
       value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined)
+      onChange={(e) => {
+        setFilter(e.target.value || undefined);
       }}
     >
       <option value="">All</option>
@@ -74,9 +80,8 @@ function SelectColumnFilter({
         </option>
       ))}
     </select>
-  )
+  );
 }
-
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
@@ -174,7 +179,7 @@ function Table({ columns, data, totalAssets, loading }) {
           setGlobalFilter={setGlobalFilter}
         />
         {/* Dropdown to filter by category/categories */}
-        
+
         {/* Dropdown to filter by companies */}
         {/* Dropdown to filter by marketcap */}
       </div>
@@ -267,8 +272,13 @@ function Table({ columns, data, totalAssets, loading }) {
             <p className="text-sm text-white">
               {/*  Showing {page.length} of ~{controlledPageCount * pageSize}{" "} results */}
               Showing <span className="font-medium">{pageIndex * 25 + 1}</span>{" "}
-              to <span className="font-medium">{pageIndex+1 == pageCount ? totalAssets : (pageIndex + 1) * 25}</span> of{" "}
-              <span className="font-medium">{totalAssets}</span> results
+              to{" "}
+              <span className="font-medium">
+                {pageIndex + 1 == pageCount
+                  ? totalAssets
+                  : (pageIndex + 1) * 25}
+              </span>{" "}
+              of <span className="font-medium">{totalAssets}</span> results
             </p>
           </div>
 
