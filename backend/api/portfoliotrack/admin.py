@@ -12,15 +12,15 @@ class CompanyAdmin(admin.ModelAdmin):
 class AssetsAdmin(admin.ModelAdmin):
     # list_display = ('company', 'name', 'url', 'image', 'smartContractAddress', 'initialMarketCap', 'initialPrice', 'dateAdded',)
     filter_horizontal = ('company', 'category',)
-    list_display = ('name', 'categories', 'companies', 'currentMarketCap', 'currentPrice', 'url', 'smartContractAddress', 'dateAdded',)
+    list_display = ('name', 'companies', 'currentMarketCap', 'currentPrice', 'url', 'smartContractAddress', 'dateAdded',)
 
     search_fields = ['name']
     
     def companies(self, obj):
         return ",\n".join([p.name for p in obj.company.all()])
 
-    def categories(self, obj):
-        return ",\n".join([p.tag for p in obj.category.all()])
+    # def categories(self, obj):
+    #     return ",\n".join([p.tag for p in obj.category.all()])
 
     def url(self, obj):
         return format_html("<a href='{url}'>{url}</a>", url=obj.firm_url)

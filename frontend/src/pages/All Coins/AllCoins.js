@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 
-// Import 
-import SkeletonStats from "../../components/Stats/SkeletonLoaderStats";
-
 // Import Components
 import Table from "../../components/Table/Table";
 import Stats from "../../components/Stats/Stats";
+
+// Skeleton Loaders
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import "./AllCoins.css";
 
@@ -34,7 +35,8 @@ function AllCoins() {
                 href={`http://localhost:3000/exchange/${data.name}`}
                 className=""
               >
-                {data.name}{i < e.value.length - 1 ? ", " : ""}
+                {data.name}
+                {i < e.value.length - 1 ? ", " : ""}
               </a>
             ))}
           </div>
@@ -53,34 +55,32 @@ function AllCoins() {
       {
         Header: "Last Price",
         accessor: "currentPrice",
-        Cell: e => {
+        Cell: (e) => {
           // convert to dollar
           if (e.value != null) {
             return `$${e.value.toLocaleString()}`;
-          } else { 
-            return e.value; 
+          } else {
+            return e.value;
           }
         },
       },
       {
         Header: "Last Market Cap",
         accessor: "currentMarketCap",
-        Cell: e => {
+        Cell: (e) => {
           // convert to dollar with commas
           if (e.value != null) {
             return `$${e.value.toLocaleString()}`;
-          } else { 
-            return e.value; 
+          } else {
+            return e.value;
           }
         },
       },
       {
         Header: "7 Day Change",
         accessor: "sparkline",
-        Cell: e => (
-          <img src={e.value} />
-        ),
-      }
+        Cell: (e) => <img src={e.value} />,
+      },
     ],
     []
   );
@@ -90,31 +90,57 @@ function AllCoins() {
   const [loading, setLoading] = React.useState(false);
   const [totalAssets, setTotalAssets] = React.useState(null);
 
-
   // Only make the request once for the data
   useEffect(() => {
     setLoading(true);
 
     // API call to backend localhost:8080/asset/all
     const url = `http://localhost:8000/asset/all/`;
-    
+
     fetch(url).then(async (res) => {
       let data = await res.json();
-      
-      setData(data);      
+
+      setData(data);
       setTotalAssets(data.length);
-      
-      console.log(data);
+
       setLoading(false);
     });
   }, []);
 
+  const tableColumns = React.useMemo(
+    () =>
+      loading
+        ? columns.map((column) => ({
+            ...column,
+            Cell: (
+              <SkeletonTheme
+                className="text-lg"
+                baseColor="#3d3d3d"
+                highlightColor="#2e2e2e"
+              >
+                <Skeleton height={25} width={133} />
+              </SkeletonTheme>
+            ),
+          }))
+        : columns,
+    [loading, columns]
+  );
+
+  const tableData = React.useMemo(
+    () => (loading ? Array(30).fill({}) : data),
+    [loading, data]
+  );
+
   return (
     <div className="flex flex-col bg-gray-900 grid grid-cols-1 md:px-16 px-5">
       <div>
-        {/* <Stats totalAssets={totalAssets} name="ALL" /> */}
-        <SkeletonStats name="All" />
-        <Table columns={columns} data={data} totalAssets={totalAssets} />
+        <Stats loading={loading} totalAssets={totalAssets} name="ALL" />
+        <Table
+          totalAssets={totalAssets}
+          columns={tableColumns}
+          data={tableData}
+        />
+        {loading ? <div className="h-screen"></div> : null}
       </div>
     </div>
   );

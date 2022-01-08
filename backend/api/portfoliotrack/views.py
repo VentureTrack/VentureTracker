@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 
 from .models import Company, Asset
 from .populate import populateAssets, populateCompany, populateSmartContracts, priceUpdate
-from .pagination import StandardResultsSetPagination
 
+from rest_framework.response import Response
 
 @action(detail=False, methods=['get'])
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -24,35 +24,27 @@ class AllAssetsViewSet(viewsets.ModelViewSet):
 class CompanyAssetsViewSet(viewsets.ModelViewSet):
     # Get slug from url
     lookup_field = 'company'
-    serializer_class = AssetsSerializer
     queryset = Asset.objects.all()
+    serializer_class = AssetsSerializer
 
     # filter by slug in url in django rest framework modelviewset
     def get_queryset(self):
         slug = self.kwargs['company']
         
-        # #  crypto.com, gate.io, blockchain.com
+        #  crypto.com, gate.io, blockchain.com
         slug = slug.replace('com', '.com')
         slug = slug.replace('io', '.io')
         
-        # Allow dashes in slug
-        # company = company.replace('-', ' ')
-
         # get all transactions by congress person
         company = Company.objects.get(name=slug)
         queryset = Asset.objects.filter(company=company)
         
-        print(queryset)
-
-        # return queryset
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
-        paginator = StandardResultsSetPagination()
-        result_page = paginator.paginate_queryset(self.get_queryset(), request)
-        serializer = self.get_serializer(result_page, many=True)
-
-        return paginator.get_paginated_response(serializer.data)
+        instance = self.get_queryset()
+        serializer = AssetsSerializer(instance, many=True)
+        return Response(serializer.data)
 
 class AssetsViewSet(viewsets.ModelViewSet):
     # Get slug from url
@@ -66,10 +58,25 @@ class AssetsViewSet(viewsets.ModelViewSet):
  
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = AssetsSerializer(instance, many=True)
+        return Response(serializer.data)
+
 class PopulateDBViewSet(viewsets.ModelViewSet):
     # populateCompany()
     # populateAssets()
     # populateSmartContracts()
-    # priceUpdate()
     
+    # filter all objects where coinId has a value
+    queryset = Asset.objects.filter(coinId__isnull=False)
+    
+    i = 0
+    for obj in queryset:
+        if i == 45:
+            print("Sleeping for 10 seconds to avoid rate limit")
+            time.sleep(10)
+            i = 0
+        priceUpdate(obj)
+
     pass

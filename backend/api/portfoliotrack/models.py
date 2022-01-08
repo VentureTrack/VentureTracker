@@ -64,62 +64,8 @@ class Asset(models.Model):
     class Meta:
         unique_together = (('name', 'url', 'image', 'smartContractAddress', 'assetPlatform'),)
 
-
-def priceUpdate(instance):
-    # if not instance.initialMarketCap and instance.assetPlatform: 
-    # Get current marketcap and price from coingeko
-    currency = "USD"
-
-    url = f"https://api.coingecko.com/api/v3/coins/{instance.coinId}?tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false"
-
-    response = requests.get(url)
-    data = json.loads(response.text)
-
-    url = data['links']['homepage'][0] or None
-    assetPlatform = data['asset_platform_id'] or None
-    
-    if assetPlatform is not None:
-        smartContractAddress = data['platforms'][data['asset_platform_id']] or None
-    else:
-        smartContractAddress = None
-    
-    dailyChange = data['market_data']['price_change_percentage_24h_in_currency'][currency.lower()] or None
-    monthlyChange = data['market_data']['price_change_percentage_30d_in_currency'][currency.lower()] or None
-    currentMarketCap = data['market_data']['market_cap'][currency.lower()] or None
-    currentPrice = data['market_data']['current_price'][currency.lower()] or None
-
-    # get the number between 'https://assets.coingecko.com/coins/images/' and '/' from 'https://assets.coingecko.com/coins/images/13029/thumb/axie_infinity_logo.png?1604471082'
-    sparklineId = data['image']['small'][42 : data['image']['small'].find('/', 42)]
-
-    sparkline = f'https://www.coingecko.com/coins/{sparklineId}/sparkline'
-
-    Asset.objects.filter(id=instance.id).update(
-        url=url,
-        assetPlatform=assetPlatform,
-        smartContractAddress=smartContractAddress,
-        dailyChange=dailyChange,
-        monthlyChange=monthlyChange,
-        currentMarketCap=currentMarketCap,
-        currentPrice=currentPrice,
-        sparkline=sparkline
-    )
-
-    # TODO: delete tag that are not in the list
-    for tag in data['categories']:
-        # check if tag exists, if not add it
-        obj, p = Category.objects.get_or_create(tag=tag)
         
-        # check to see if instance.category has this tag
-        if obj not in instance.category.all():
-            instance.category.add(obj.id)
 
-
-@receiver(post_save, sender=Asset)
-def updatePrices(sender, instance, raw, signal, created, *args, **kwargs):    
-    if instance.coinId != None:
-        priceUpdate(instance)
-
-        print(instance.category.all())
-        instance.category.set(instance.category.all())
-
-        print(instance.category.all())
+# @receiver(post_save, sender=Asset)
+# def updatePrices(sender, instance, raw, signal, created, *args, **kwargs):    
+#     pass

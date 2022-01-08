@@ -101,7 +101,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 
 fuzzyTextFilterFn.autoRemove = (val) => !val;
 
-function Table({ columns, data, totalAssets }) {
+function Table({ columns, data, totalAssets, loading }) {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -235,21 +235,6 @@ function Table({ columns, data, totalAssets }) {
                 </tr>
               );
             })}
-
-            {/* Loading Symbol */}
-            {/* <tr>
-              {loading ? (
-                // Use our custom loading state to show a loading indicator
-                <td colSpan="10000" className="text-white">
-                  Loading...
-                </td>
-              ) : (
-                <td colSpan="10000" className="text-white">
-                  Showing {page.length} of {totalAssets}{" "}
-                  results
-                </td>
-              )}
-            </tr> */}
           </tbody>
         </table>
       </div>

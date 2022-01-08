@@ -10,7 +10,7 @@ from .scripts.cointiger import cointiger
 from .scripts.okex import okex
 from .scripts.huobi import huobi, huobidefilabs
 
-from .models import Asset, Company
+from .models import Asset, Company, Category
 
 from .scripts.helper import getSmartContractAddress
 
@@ -57,29 +57,59 @@ def populateSmartContracts():
     getSmartContractAddress(details)
     
 
-def priceUpdate():
-    # Iterate through all Assets
-    assets = Asset.objects.all().order_by('name')
 
-    for asset in assets:
-        smartContractAddress = asset.smartContractAddress
-        assetPlatform = asset.asset_platform
+def priceUpdate(instance):
+    # if not instance.initialMarketCap and instance.assetPlatform: 
+    # Get current marketcap and price from coingeko
+    currency = "USD"
 
-        if smartContractAddress != None and assetPlatform != None:
-            currency = "USD"
-            contractAddress = asset.smartContractAddress
-            assetPlatform = asset.asset_platform
+    url = f"https://api.coingecko.com/api/v3/coins/{instance.coinId}?tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false"
 
-            url = f"https://api.coingecko.com/api/v3/simple/token_price/{assetPlatform}?contract_addresses={contractAddress}&vs_currencies={currency}&include_market_cap=true"
+    response = requests.get(url)
+    data = json.loads(response.text)
 
-            response = requests.get(url)
-            data = json.loads(response.text)
-            
-            # instance.initialMarketCap = data[contractAddress][currency.lower() + "_market_cap"] 
-            # instance.initialPrice = data[contractAddress][currency.lower()]
-
-            Asset.objects.filter(id=asset.id).update(currentMarketCap=data[contractAddress][currency.lower() + "_market_cap"] , currentPrice=data[contractAddress][currency.lower()])
-
-            time.sleep(2)
+    url = data['links']['homepage'][0] or None
+    assetPlatform = data['asset_platform_id'] or None
     
+    if assetPlatform is not None:
+        smartContractAddress = data['platforms'][data['asset_platform_id']] or None
+    else:
+        smartContractAddress = None
+    
+    dailyChange = data['market_data']['price_change_percentage_24h_in_currency'][currency.lower()] or None
+    monthlyChange = data['market_data']['price_change_percentage_30d_in_currency'][currency.lower()] or None
+    currentMarketCap = data['market_data']['market_cap'][currency.lower()] or None
+    currentPrice = data['market_data']['current_price'][currency.lower()] or None
 
+    # get the number between 'https://assets.coingecko.com/coins/images/' and '/' from 'https://assets.coingecko.com/coins/images/13029/thumb/axie_infinity_logo.png?1604471082'
+    sparklineId = data['image']['small'][42 : data['image']['small'].find('/', 42)]
+
+    sparkline = f'https://www.coingecko.com/coins/{sparklineId}/sparkline'
+
+    Asset.objects.filter(id=instance.id).update(
+        url=url,
+        assetPlatform=assetPlatform,
+        smartContractAddress=smartContractAddress,
+        dailyChange=dailyChange,
+        monthlyChange=monthlyChange,
+        currentMarketCap=currentMarketCap,
+        currentPrice=currentPrice,
+        sparkline=sparkline
+    )
+
+    for tag in data['categories']:
+        # check if tag exists, if not add it
+        obj, p = Category.objects.get_or_create(tag=tag)
+
+        # Add obj to many to many field tag
+        instance.category.add(obj)
+    
+    # Second for loop to delete tags that are not in the data
+    for tag in instance.category.all():
+        if tag.tag not in data['categories']:
+            instance.category.remove(tag)
+    
+    instance.save()
+    
+    print(instance.category.all())
+    
