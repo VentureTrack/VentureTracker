@@ -139,6 +139,7 @@ function AllCoins() {
           totalAssets={totalAssets}
           columns={tableColumns}
           data={tableData}
+          title={'All Cryptocurrencies'}
         />
         {loading ? <div className="h-screen"></div> : null}
       </div>

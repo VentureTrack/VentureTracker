@@ -106,7 +106,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 
 fuzzyTextFilterFn.autoRemove = (val) => !val;
 
-function Table({ columns, data, totalAssets, loading }) {
+function Table({ columns, data, totalAssets, title }) {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -172,16 +172,21 @@ function Table({ columns, data, totalAssets, loading }) {
   // Render the UI for your table
   return (
     <div className="grid grid-cols-1 bg-gray-900 my-5">
-      <div className="mb-3">
-        <GlobalFilter
-          preGlobalFilteredRows={preGlobalFilteredRows}
-          globalFilter={state.globalFilter}
-          setGlobalFilter={setGlobalFilter}
-        />
-        {/* Dropdown to filter by category/categories */}
+      <div className="mb-3 flex justify-between">
+        <div className="text-white text-2xl">{title}</div>
 
-        {/* Dropdown to filter by companies */}
-        {/* Dropdown to filter by marketcap */}
+        <div>
+          <GlobalFilter
+            preGlobalFilteredRows={preGlobalFilteredRows}
+            globalFilter={state.globalFilter}
+            setGlobalFilter={setGlobalFilter}
+          />
+          {/* Dropdown to filter by category/categories */}
+
+          {/* Dropdown to filter by companies */}
+          {/* Dropdown to filter by marketcap */}
+        </div>
+
       </div>
 
       {/* Table */}
